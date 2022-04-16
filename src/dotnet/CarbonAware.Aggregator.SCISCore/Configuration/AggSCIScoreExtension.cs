@@ -9,7 +9,7 @@ public static class AggregatorSCIScoreServicesConfiguration
     public static void AddAggregatorSCIScoreServices(this IServiceCollection services)
     {
        services.TryAddSingleton<IAggregatorSCIScore, AggregatorSCIScore>();
-       services.AddPluginService(PluginType.JSON);
-       services.AddPluginService(PluginType.Energy);
+       services.AddPluginService(PluginType.CarbonIntesity_Json);
+       services.AddPluginService(PluginType.Energy_Static);
     }
 }

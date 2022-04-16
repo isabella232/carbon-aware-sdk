@@ -12,17 +12,17 @@ public static class DepRegServiceExtension
     {
         switch (pType)
         {
-                case PluginType.JSON:
+                case PluginType.CarbonIntesity_Json:
                 {
                     services.AddCarbonAwareServices();
                     break;
                 }
-                case PluginType.WattTime:
+                case PluginType.CarbonIntesity_WattTime:
                 {
                     services.AddWattTimeServices();
                     break;
                 }
-                case PluginType.Energy:
+                case PluginType.Energy_Static:
                 {
                     services.AddEneryStaticServices();
                     break;
@@ -35,7 +35,7 @@ public static class DepRegServiceExtension
 public enum PluginType
 {
     None,
-    WattTime,
-    JSON,
-    Energy
+    CarbonIntesity_WattTime,
+    CarbonIntesity_Json,
+    Energy_Static
 }

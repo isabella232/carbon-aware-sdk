@@ -19,7 +19,7 @@ public class AggregatorSCIScore : IAggregatorSCIScore
     public async Task<int> CalcScore()
     {
         _logger.LogInformation("Calculating Score");
-        var v1 = await _energy.GetConsumedAsync() + 10;
+        var v1 = await _energy.GetConsumedAsync();
         var elems = await _carbon.GetEmissionsDataAsync(new Dictionary<string, object>());
         var tot = v1 + elems.Where(x => x.Rating < 20).Count();
         _logger.LogInformation($"Calculating Score Done: {tot}");

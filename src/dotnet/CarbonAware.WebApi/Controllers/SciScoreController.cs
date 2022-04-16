@@ -45,13 +45,16 @@ public class SciScoreController : ControllerBase
         return await Task.Run(() => Ok(score));
     }
 
-    [HttpGet("jcz")]
+    [HttpGet("fakescore")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetJZSCIScore()
     {
         var v = await _aggregator.CalcScore();
-        return await Task.Run(() => Ok(v));
+        var s = new SciScore {
+            SciScoreValue = v
+        };
+        return await Task.Run(() => Ok(s));
     }
 
 }
