@@ -18,12 +18,11 @@ public class AggregatorSCIScore : IAggregatorSCIScore
 
     public async Task<int> CalcScore()
     {
+        _logger.LogInformation("Calculating Score");
         var v1 = await _energy.GetConsumedAsync() + 10;
-        var e = await _carbon.GetEmissionsDataAsync(new Dictionary<string, object>());
-        foreach (var ee in e)
-        {
-            _logger.LogInformation($"{ee.Location}");
-        }
-        return await Task.Run(() => v1);
+        var elems = await _carbon.GetEmissionsDataAsync(new Dictionary<string, object>());
+        var tot = v1 + elems.Where(x => x.Rating < 20).Count();
+        _logger.LogInformation($"Calculating Score Done: {tot}");
+        return await Task.Run(() => tot);
     }
 }
