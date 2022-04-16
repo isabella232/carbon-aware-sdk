@@ -9,10 +9,12 @@ namespace CarbonAware.WebApi.Controllers;
 public class SciScoreController : ControllerBase
 {
     private readonly ILogger<SciScoreController> _logger;
+    private readonly IAggregatorSCIScore _aggregator;
 
-    public SciScoreController(ILogger<SciScoreController> logger)
+    public SciScoreController(ILogger<SciScoreController> logger, IAggregatorSCIScore aggregator)
     {
         _logger = logger;
+        _aggregator = aggregator;
     }
 
     [HttpPost]
@@ -42,4 +44,14 @@ public class SciScoreController : ControllerBase
 
         return await Task.Run(() => Ok(score));
     }
+
+    [HttpGet("jcz")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetJZSCIScore()
+    {
+        var v = await _aggregator.CalcScore();
+        return await Task.Run(() => Ok(v));
+    }
+
 }

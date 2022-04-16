@@ -31,6 +31,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarbonAware.Tools.WattTimeC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarbonAware.Tools.WattTimeClient.Tests", "CarbonAware.Tools.WattTimeClient.Tests\CarbonAware.Tools.WattTimeClient.Tests.csproj", "{9122F502-56BB-4B44-9E9D-F481A043963A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonAware.DepReg", "CarbonAware.DepReg\CarbonAware.DepReg.csproj", "{4B79C9CA-A254-45BD-9CED-1243442B5991}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonAware.Plugins.WattTime", "CarbonAware.Plugins.WattTime\CarbonAware.Plugins.WattTime.csproj", "{BBAF63B7-A95E-457B-98C3-AFE22A929773}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonAware.Plugins.EnergyStatic", "CarbonAware.Plugins.EnergyStatic\CarbonAware.Plugins.EnergyStatic.csproj", "{356AE6D3-7594-43DA-9F17-D2E5844D48B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonAware.Aggregator.SCISCore", "CarbonAware.Aggregator.SCISCore\CarbonAware.Aggregator.SCISCore.csproj", "{E69873E8-D61F-49C3-8B7F-D90D66F84B6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +97,22 @@ Global
 		{9122F502-56BB-4B44-9E9D-F481A043963A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9122F502-56BB-4B44-9E9D-F481A043963A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9122F502-56BB-4B44-9E9D-F481A043963A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B79C9CA-A254-45BD-9CED-1243442B5991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B79C9CA-A254-45BD-9CED-1243442B5991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B79C9CA-A254-45BD-9CED-1243442B5991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B79C9CA-A254-45BD-9CED-1243442B5991}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBAF63B7-A95E-457B-98C3-AFE22A929773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBAF63B7-A95E-457B-98C3-AFE22A929773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBAF63B7-A95E-457B-98C3-AFE22A929773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBAF63B7-A95E-457B-98C3-AFE22A929773}.Release|Any CPU.Build.0 = Release|Any CPU
+		{356AE6D3-7594-43DA-9F17-D2E5844D48B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356AE6D3-7594-43DA-9F17-D2E5844D48B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356AE6D3-7594-43DA-9F17-D2E5844D48B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356AE6D3-7594-43DA-9F17-D2E5844D48B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E69873E8-D61F-49C3-8B7F-D90D66F84B6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E69873E8-D61F-49C3-8B7F-D90D66F84B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E69873E8-D61F-49C3-8B7F-D90D66F84B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E69873E8-D61F-49C3-8B7F-D90D66F84B6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 
-using CarbonAware.Plugins.JsonReaderPlugin.Configuration;
+using CarbonAware.Aggregator.SCISCore.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCarbonAwareServices();
+builder.Services.AddAggregatorSCIScoreServices();
 
 var app = builder.Build();
 
