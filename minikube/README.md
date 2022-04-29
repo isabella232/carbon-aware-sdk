@@ -1,6 +1,6 @@
 # PoC: Deploy CA WebApi using minikube
 
-The goal of this PoC is to use devcontainer minikube definition to spawn CarbonAware WebApi service into a minikube cluster.
+The goal of this PoC is to use devcontainer minikube definition to start a CarbonAware WebApi service into a minikube cluster.
 
 ## Steps
 1. Start minikube
@@ -21,7 +21,7 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
     ```sh
     eval $(minikube docker-env) 
     ```
-    After this let's deploy the service
+    Now perform the pod deployment.
     ```sh
     kubectl apply -f minikube/deployments/cawebservice-deployment.yml
     ```
@@ -34,6 +34,7 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
     cawebservice-deployment-66c746956b-sfn4z   1/1     Running   0          9s
     ```
     There should be listed 2 pods, since the deployment descriptor has 2 replicas. This yaml file also has a `livenessProbe` probe that checks the `health` endpoint of the service.
+    Besides there are environment variables that can be used to change the data source (i.e JSON, WattTime) and also to set up other ones. See details of `cawebservices-deployment.yml`
 
 1. Deploy CA service yaml
     To access the Webservice, a `LoadBalancer` service is created using `cawebservice-service.yml`. Before installing the service, it is important to enable minikube tunnel to be able to get an IP address to the service that can be reachable from the host. On a new terminal run:
