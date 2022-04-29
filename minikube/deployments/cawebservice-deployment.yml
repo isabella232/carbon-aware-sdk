@@ -16,6 +16,9 @@ spec:
       - name: cawebservice
         imagePullPolicy: Never
         image: cawebservice_image:latest
+        env:
+          - name: CarbonAwareVars__CarbonIntensityDataSource
+            value: "JSON"
         ports:
         - containerPort: 80
         livenessProbe:
