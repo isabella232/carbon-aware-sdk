@@ -33,7 +33,7 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
     cawebservice-deployment-66c746956b-7c7qs   1/1     Running   0          9s
     cawebservice-deployment-66c746956b-sfn4z   1/1     Running   0          9s
     ```
-    There should be listed 2 pods, since the deployment descriptor has 2 replicas.
+    There should be listed 2 pods, since the deployment descriptor has 2 replicas. This yaml file also has a `livenessProbe` probe that checks the `health` endpoint of the service.
 
 1. Deploy CA service yaml
     To access the Webservice, a `LoadBalancer` service is created using `cawebservice-service.yml`. Before installing the service, it is important to enable minikube tunnel to be able to get an IP address to the service that can be reachable from the host. On a new terminal run:
@@ -75,6 +75,16 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
     ]
     ```
 
+1. Check pod logs 
+    ```sh
+    kubectl logs cawebservice-deployment-66c746956b-7c7qs | jq
+    ```
+
+1. Describe pod
+    ```sh
+    kubectl describe pod cawebservice
+    ```
+
 1. Delete CA Service
 
     ```sh
@@ -86,3 +96,4 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
 
 https://github.com/microsoft/vscode-dev-containers
 https://minikube.sigs.k8s.io/docs/handbook/pushing/
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
