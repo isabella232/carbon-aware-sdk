@@ -36,7 +36,7 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
     There should be listed 2 pods, since the deployment descriptor has 2 replicas.
 
 1. Deploy CA service yaml
-    To access the Webservice, a `LoadBalancer` is created using `cawebservice-service.yml`. Before installing the service, it is important to enable minikube tunnel to be able to get an IP address to the service that can be reachable from the host. On a new terminal run:
+    To access the Webservice, a `LoadBalancer` service is created using `cawebservice-service.yml`. Before installing the service, it is important to enable minikube tunnel to be able to get an IP address to the service that can be reachable from the host. On a new terminal run:
     ```sh
     minikube tunnel
     ```
@@ -71,16 +71,6 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
             "time": "2022-04-23T04:45:11.5092665+00:00",
             "rating": 38
         },
-        {
-            "location": "eastus",
-            "time": "2022-04-23T12:45:11.5092666+00:00",
-            "rating": 84
-        },
-        {
-            "location": "eastus",
-            "time": "2022-04-23T20:45:11.5092666+00:00",
-            "rating": 75
-        },
         ...
     ]
     ```
@@ -94,4 +84,5 @@ The goal of this PoC is to use devcontainer minikube definition to spawn CarbonA
 
 ## References
 
-https://github.com/kubernetes/minikube/blob/0c616a6b42b28a1aab8397f5a9061f8ebbd9f3d9/README.md#reusing-the-docker-daemon
+https://github.com/microsoft/vscode-dev-containers
+https://minikube.sigs.k8s.io/docs/handbook/pushing/
