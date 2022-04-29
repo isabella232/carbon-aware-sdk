@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cawebservice-deployment
+spec:
+  selector:
+    matchLabels:
+      app: cawebservice
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: cawebservice
+    spec:
+      containers:
+      - name: cawebservice
+        imagePullPolicy: Never
+        image: cawebservice_image:latest
+        ports:
+        - containerPort: 80
