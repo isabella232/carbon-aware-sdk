@@ -81,7 +81,7 @@ public class CarbonAwareCLI
     public void OutputEmissionsData(IEnumerable<EmissionsData> emissions)
     {
         var outputData = $"{JsonConvert.SerializeObject(emissions, Formatting.Indented)}";
-        _logger.LogCritical(outputData);
+        _logger.LogDebug(outputData);
         Console.WriteLine(outputData);
     }
 
@@ -151,12 +151,7 @@ public class CarbonAwareCLI
 
     private void ParseTimeFromTime(CLIOptions o)
     {
-        if (o.Time is null)
-        {
-            _state.TimeOption = TimeOptionStates.Time;
-            _state.Time = DateTime.Now;
-        }
-        else if (o.Time is not null)
+        if (o.Time is not null)
         {
             _state.TimeOption = TimeOptionStates.Time;
             try

@@ -30,7 +30,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/dotnet/CarbonAware.CLI/bin/Debug/net6.0/CarbonAware.CLI.dll",
-      "args": [],
+      "args": ["-l", "eastus"],
       "cwd": "${workspaceFolder}/src/dotnet/CarbonAware.CLI/",
       "stopAtEntry": false,
       "env": {
