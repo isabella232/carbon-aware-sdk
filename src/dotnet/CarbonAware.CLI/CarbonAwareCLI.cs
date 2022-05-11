@@ -9,6 +9,7 @@ using CarbonAware.Aggregators.CarbonAware;
 using CarbonAware.Aggregators.SciScore;
 using CarbonAware.Interfaces;
 using Microsoft.Extensions.Logging;
+using CarbonAware.Model;
 
 public class CarbonAwareCLI
 {
@@ -64,7 +65,7 @@ public class CarbonAwareCLI
         }
     }
 
-    public async Task GetCarbonEmissionsData()
+    public async Task DisplayCarbonEmissionsData()
     {
         if(!this.Parsed) 
         {
@@ -72,7 +73,6 @@ public class CarbonAwareCLI
         }
         switch(_state.Route) 
         {
-            
             case RouteOptions.EmissionsForLocationsByTime: 
             {
                 var result = await GetEmissions(false);
@@ -87,24 +87,14 @@ public class CarbonAwareCLI
             }
             case RouteOptions.SciScore: 
             {
-                var result = await GetSciScore();
+                var result = GetSciScore();
                 OutputEmissionsData(result);
                 break;
             }
         }
-        
-        
-        // IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
-        // var props = new Dictionary<string, object>() {
-        //     { CarbonAwareConstants.Locations, locations },
-        //     { CarbonAwareConstants.Start, _state.Time },
-        //     { CarbonAwareConstants.End, _state.ToTime },
-        //     { CarbonAwareConstants.Best, true }
-        // };
-        // return await GetEmissionsDataAsync(props);
     }
 
-    private async Task<double> GetSciScore()
+    private SciScore GetSciScore()
     {
         IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
         var props = new Dictionary<string, object>() {
@@ -113,9 +103,16 @@ public class CarbonAwareCLI
             { CarbonAwareConstants.End, _state.ToTime },
             { CarbonAwareConstants.Best, true }
         };
-
-        //return await sciScoreAggregator.CalculateAverageCarbonIntensityAsync(_state.Locations, );
-        return 1.00;
+        var score = new SciScore
+        {
+            SciScoreValue = 100.0,
+            EnergyValue = 1.0,
+            MarginalCarbonIntensityValue = 100.0,
+            EmbodiedEmissionsValue = 0.0,
+            FunctionalUnitValue = 1
+        };
+        return score;
+        
     }
 
     //TODO: Add Method documentation

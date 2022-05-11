@@ -13,7 +13,7 @@ class Program
     {
         ServiceProvider serviceProvider = BootstrapServices();
 
-        await InitializeCLIAsync(args, serviceProvider.GetRequiredService<ICarbonAwareAggregator>(), serviceProvider.GetRequiredService<ISciScoreAggregator>(), serviceProvider.GetService<ILogger<CarbonAwareCLI>>());
+        await DisplayResultsAsync(args, serviceProvider.GetRequiredService<ICarbonAwareAggregator>(), serviceProvider.GetRequiredService<ISciScoreAggregator>(), serviceProvider.GetService<ILogger<CarbonAwareCLI>>());
     }
 
     private static ServiceProvider BootstrapServices() {
@@ -35,10 +35,10 @@ class Program
         return serviceProvider;
     }
 
-    private static async Task InitializeCLIAsync(string[] args, ICarbonAwareAggregator carbonAwareAggregator, 
+    private static async Task DisplayResultsAsync(string[] args, ICarbonAwareAggregator carbonAwareAggregator, 
                                                     ISciScoreAggregator sciAggregator, ILogger<CarbonAwareCLI> logger) 
     {
         var cli = new CarbonAwareCLI(args, carbonAwareAggregator, sciAggregator, logger);
-        await cli.GetCarbonEmissionsData();    
+        await cli.DisplayCarbonEmissionsData();    
     }
 }

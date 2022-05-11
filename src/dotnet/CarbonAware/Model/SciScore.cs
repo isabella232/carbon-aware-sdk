@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CarbonAware.WebApi.Models;
+namespace CarbonAware.Model;
 
 [Serializable]
 public record SciScore
