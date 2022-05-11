@@ -6,6 +6,7 @@ using CommandLine.Text;
 namespace CarbonAware.CLI;
 
 using CarbonAware.Aggregators.CarbonAware;
+using CarbonAware.Aggregators.SciScore;
 using CarbonAware.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -17,13 +18,17 @@ public class CarbonAwareCLI
     /// Indicates if the command line arguments have been parsed successfully 
     /// </summary>
     public bool Parsed { get; private set; } = false;
-    ICarbonAwareAggregator _aggregator {get; set;}
+    ICarbonAwareAggregator carbonAwareAggregator {get; set;}
+
+    ISciScoreAggregator sciScoreAggregator {get; set;}
+
 
     private readonly ILogger<CarbonAwareCLI> _logger;
 
-    public CarbonAwareCLI(string[] args, ICarbonAwareAggregator aggregator, ILogger<CarbonAwareCLI> logger)
+    public CarbonAwareCLI(string[] args, ICarbonAwareAggregator caAggregator, ISciScoreAggregator sciScoreAggregator, ILogger<CarbonAwareCLI> logger)
     {
-        this._aggregator = aggregator;
+        this.carbonAwareAggregator = caAggregator;
+        this.sciScoreAggregator = sciScoreAggregator;
         this._logger = logger;
         
         var parseResult = Parser.Default.ParseArguments<CLIOptions>(args);
@@ -59,7 +64,47 @@ public class CarbonAwareCLI
         }
     }
 
-    public async Task<IEnumerable<EmissionsData>> GetEmissions()
+    public async Task GetCarbonEmissionsData()
+    {
+        if(!this.Parsed) 
+        {
+            return;
+        }
+        switch(_state.Route) 
+        {
+            
+            case RouteOptions.EmissionsForLocationsByTime: 
+            {
+                var result = await GetEmissions(false);
+                OutputEmissionsData(result);
+                break;
+            } 
+            case RouteOptions.BestEmissionsForLocationsByTime: 
+            {
+                var result = await GetEmissions(true);
+                OutputEmissionsData(result);
+                break;
+            }
+            case RouteOptions.SciScore: 
+            {
+                var result = await GetSciScore();
+                OutputEmissionsData(result);
+                break;
+            }
+        }
+        
+        
+        // IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
+        // var props = new Dictionary<string, object>() {
+        //     { CarbonAwareConstants.Locations, locations },
+        //     { CarbonAwareConstants.Start, _state.Time },
+        //     { CarbonAwareConstants.End, _state.ToTime },
+        //     { CarbonAwareConstants.Best, true }
+        // };
+        // return await GetEmissionsDataAsync(props);
+    }
+
+    private async Task<double> GetSciScore()
     {
         IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
         var props = new Dictionary<string, object>() {
@@ -68,17 +113,32 @@ public class CarbonAwareCLI
             { CarbonAwareConstants.End, _state.ToTime },
             { CarbonAwareConstants.Best, true }
         };
+
+        //return await sciScoreAggregator.CalculateAverageCarbonIntensityAsync(_state.Locations, );
+        return 1.00;
+    }
+
+    //TODO: Add Method documentation
+    public async Task<IEnumerable<EmissionsData>> GetEmissions(bool isBest)
+    {
+        IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
+        var props = new Dictionary<string, object>() {
+            { CarbonAwareConstants.Locations, locations },
+            { CarbonAwareConstants.Start, _state.Time },
+            { CarbonAwareConstants.End, _state.ToTime },
+            { CarbonAwareConstants.Best, isBest }
+        };
         return await GetEmissionsDataAsync(props);
     }
 
     private async Task<IEnumerable<EmissionsData>> GetEmissionsDataAsync(Dictionary<string, object> props)
     {
-        IEnumerable<EmissionsData> e = await _aggregator.GetEmissionsDataAsync(props);
+        IEnumerable<EmissionsData> e = await carbonAwareAggregator.GetEmissionsDataAsync(props);
 
-        return await _aggregator.GetEmissionsDataAsync(props);
+        return await carbonAwareAggregator.GetEmissionsDataAsync(props);
     }
 
-    public void OutputEmissionsData(IEnumerable<EmissionsData> emissions)
+    public void OutputEmissionsData(object emissions)
     {
         var outputData = $"{JsonConvert.SerializeObject(emissions, Formatting.Indented)}";
         _logger.LogDebug(outputData);
@@ -101,6 +161,14 @@ public class CarbonAwareCLI
 
         // -l --locations
         ParseLocations(o);
+
+        // -r --api route
+        ParseRoute(o);
+    }
+
+    private void ParseRoute(CLIOptions o)
+    {
+        _state.Route = o.Route;
     }
 
     #region Parse Options 

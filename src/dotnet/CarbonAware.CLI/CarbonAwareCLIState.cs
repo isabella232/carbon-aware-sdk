@@ -14,4 +14,5 @@ public class CarbonAwareCLIState
     public bool Verbose { get; set; }
     public DateTime? ToTime { get; set; }
     public string ConfigPath { get; set; } = DEFAULT_CONFIG_FILE_NAME;
+    public RouteOptions Route { get; set; } 
 }

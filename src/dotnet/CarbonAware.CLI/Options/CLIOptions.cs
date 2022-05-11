@@ -14,6 +14,9 @@ public class CLIOptions
     [Option("toTime", Required = false, HelpText = "The date and time to get the emissions to when looking across a time window.")]
     public string ToTime { get; set; }
 
+    [Option('r', "route", Required = true,  HelpText = "The api route to retrieve the Carbon emissions data. It should be one of the types defined in enum - RouteOptions")]
+    public RouteOptions Route { get; set; }
+
     [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
     public bool Verbose { get; set; }
 
