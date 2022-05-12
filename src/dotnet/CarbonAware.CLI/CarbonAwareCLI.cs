@@ -99,7 +99,9 @@ public class CarbonAwareCLI
             }
             case RouteOptions.MarginalCarbonIntensity:
             {
-                var result = await GetMarginalIntensity();
+                var margCarbonIntensity = await GetMarginalIntensity();
+                var result = $"{JsonConvert.SerializeObject(margCarbonIntensity, Formatting.Indented)}";
+
                 OutputEmissionsData(result);
                 break;
             }
