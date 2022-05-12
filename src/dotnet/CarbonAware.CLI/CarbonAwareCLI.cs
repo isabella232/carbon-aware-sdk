@@ -97,9 +97,44 @@ public class CarbonAwareCLI
                 OutputEmissionsData(result);
                 break;
             }
+            case RouteOptions.MarginalCarbonIntensity:
+            {
+                var result = await GetMarginalIntensity();
+                OutputEmissionsData(result);
+                break;
+            }
         }
     }
 
+    /// <summary>
+    /// Calculates Marginal Intensity in the same way as the WebAPI
+    /// </summary>
+    private async Task<SciScore> GetMarginalIntensity()
+    {
+        DateTimeOffset fromTime = _state.Time ?? throw new ArgumentNullException("From Time is Null");
+        DateTimeOffset toTime = _state.ToTime ?? throw new ArgumentNullException("To Time is Null");
+
+        IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
+
+        try{
+            var carbonIntensity = await sciScoreAggregator.CalculateAverageCarbonIntensityAsync(locations.FirstOrDefault(), fromTime, toTime);
+
+            SciScore score = new SciScore
+                {
+                    MarginalCarbonIntensityValue = carbonIntensity,
+                };
+            
+            _logger.LogDebug($"Calculated MCI Score: {carbonIntensity}");
+
+            return score;
+        }
+        catch(Exception ex){
+            _logger.LogError(ex, "Exception occured during marginal calculation execution. Location: {locations}, Time: {timeInterval}", locations.FirstOrDefault(), _state.Time);
+            return null;
+        }
+    }
+
+    //TODO: Add Method documentation
     private SciScore GetSciScore()
     {
         IEnumerable<Location> locations = _state.Locations.Select(loc => new Location(){ RegionName = loc });
