@@ -75,19 +75,25 @@ public class CarbonAwareCLI
         {
             case RouteOptions.EmissionsForLocationsByTime: 
             {
-                var result = await GetEmissions(false);
+                var emissions = await GetEmissions(false);
+                var result = $"{JsonConvert.SerializeObject(emissions, Formatting.Indented)}";
+
                 OutputEmissionsData(result);
                 break;
             } 
             case RouteOptions.BestEmissionsForLocationsByTime: 
             {
-                var result = await GetEmissions(true);
+                var emissions = await GetEmissions(false);
+                var result = $"{JsonConvert.SerializeObject(emissions, Formatting.Indented)}";
+
                 OutputEmissionsData(result);
                 break;
             }
             case RouteOptions.SciScore: 
             {
-                var result = GetSciScore();
+                var sciScore = GetSciScore();
+                var result = $"{JsonConvert.SerializeObject(sciScore, Formatting.Indented)}";
+
                 OutputEmissionsData(result);
                 break;
             }
@@ -135,11 +141,10 @@ public class CarbonAwareCLI
         return await carbonAwareAggregator.GetEmissionsDataAsync(props);
     }
 
-    public void OutputEmissionsData(object emissions)
+    public void OutputEmissionsData(string result)
     {
-        var outputData = $"{JsonConvert.SerializeObject(emissions, Formatting.Indented)}";
-        _logger.LogDebug(outputData);
-        Console.WriteLine(outputData);
+        _logger.LogDebug(result);
+        Console.WriteLine(result);
     }
 
     private void ValidateCommandLineArguments(CLIOptions o)
