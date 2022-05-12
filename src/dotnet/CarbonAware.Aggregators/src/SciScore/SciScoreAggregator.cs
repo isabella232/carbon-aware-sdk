@@ -30,6 +30,11 @@ public class SciScoreAggregator : ISciScoreAggregator
     public async Task<double> CalculateAverageCarbonIntensityAsync(Location location, string timeInterval)
     {
         (DateTimeOffset start, DateTimeOffset end) = this.ParseTimeInterval(timeInterval);
+        return await CalculateAverageCarbonIntensityAsync(location, start, end);
+    }
+
+    public async Task<double> CalculateAverageCarbonIntensityAsync(Location location, DateTimeOffset start, DateTimeOffset end)
+    {
         var emissionData = await this._carbonIntensityDataSource.GetCarbonIntensityAsync(new List<Location>() { location }, start, end);
 
         // check whether the emissionData list is empty, if not, return Rating's average, otherwise 0.

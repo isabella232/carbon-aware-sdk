@@ -12,4 +12,6 @@ public interface ISciScoreAggregator : IAggregator
     /// <returns>An average value over the specified time interval or BadRequest Exception if the location or timeinterval is not specified
     /// <exception cref="ArgumentException">Can be thrown if an invalid location or timeInterval is provided.</exception>
     Task<double> CalculateAverageCarbonIntensityAsync(Location location, string timeInterval);
+    Task<double> CalculateAverageCarbonIntensityAsync(Location location, DateTimeOffset start, DateTimeOffset end);
+
 }
