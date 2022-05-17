@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CarbonAware.DataSources.Azure\src\CarbonAware.DataSources.Azure.csproj" />
     <ProjectReference Include="..\CarbonAware.DataSources.Json\CarbonAware.DataSources.Json.csproj" />
     <ProjectReference Include="..\CarbonAware.DataSources.WattTime\src\CarbonAware.DataSources.WattTime.csproj" />
   </ItemGroup>

@@ -39,6 +39,14 @@ public class SciScoreAggregator : ISciScoreAggregator
         return value;
     }
 
+    /// <inheritdoc />
+    public async Task<double> CalculateEnergyAsync(IEnumerable<ComputeResource> computeResources, string timeInterval)
+    {
+        (DateTimeOffset start, DateTimeOffset end) = this.ParseTimeInterval(timeInterval);
+        
+        return 99.99;
+    }
+
     // Validate and parse time interval string into a tuple of (start, end) DateTimeOffsets.
     // Throws ArgumentException for invalid input.
     private (DateTimeOffset start, DateTimeOffset end) ParseTimeInterval(string timeInterval)

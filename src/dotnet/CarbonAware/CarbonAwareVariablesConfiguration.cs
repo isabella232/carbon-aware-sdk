@@ -22,6 +22,11 @@ public class CarbonAwareVariablesConfiguration
     /// </summary>
     public string CarbonIntensityDataSource { get; set; }
 
+    /// <summary>
+    /// Gets or sets the the energy data source to use.
+    /// </summary>
+    public string EnergyDataSource { get; set; }
+
     #nullable enable
     /// <summary>
     /// Gets or sets proxy information for making calls to the internet.

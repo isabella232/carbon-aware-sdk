@@ -113,6 +113,44 @@ public class SciScoreController : ControllerBase
         }
     }
 
+
+    [HttpPost("energy")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    /// <summary> Gets the energy consumption value </summary>
+    /// 
+    // {
+    //   "timeInterval": "",
+    //   "computeResources": [
+    //     {
+    //         "metricSource": "Azure"
+    //         "subscriptionId": "123",
+    //         "resourceGroup": "rg-mygroup",
+    //         "type": "Microsoft.Compute/virtualMachines",
+    //         "name": "vm-MyVirtualMachine"
+    //     }
+    //   ]
+    // }
+    /// <param name="input"> input from JSON request converted to input object with location and time interval </param>
+    /// <returns>Result of the call to the aggregator to estimate energy consumption</returns>
+    public async Task<IActionResult> GetEnergyAsync(SciScoreInput input)
+    {
+        using (var activity = _activitySource.StartActivity(nameof(SciScoreController)))
+        {
+            _logger.LogDebug("calling to aggregator to calculate the energy usage with input: {input}", input);
+
+            var energy = await _aggregator.CalculateEnergyAsync(input.ComputeResources, input.TimeInterval);
+
+            SciScore score = new SciScore
+            {
+                EnergyValue = energy,
+            };
+            _logger.LogDebug("calculated energy: {score}", score);
+            return Ok(score);
+        }
+    }
+
     /// Validate the user input location and convert it to the internal Location object.
     //  Throws ArgumentException if input is invalid.
     private Location GetLocation(LocationInput locationInput)

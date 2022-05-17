@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using CarbonAware.DataSources.Azure.Configuration;
 using CarbonAware.DataSources.Json.Configuration;
 using CarbonAware.DataSources.WattTime.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -11,9 +12,10 @@ public static class ServiceCollectionExtensions
         // find all the Classes in the Assembly that implements AddEmissionServices method,
         // and added them here with the specific implementation class.
         var envVars = configuration?.GetSection(CarbonAwareVariablesConfiguration.Key).Get<CarbonAwareVariablesConfiguration>();
-        var dataSourceType = GetDataSourceTypeFromValue(envVars?.CarbonIntensityDataSource);
+        var carbonIntensityDataSourceType = GetDataSourceTypeFromValue(envVars?.CarbonIntensityDataSource);
+        var energyDataSourceType = GetDataSourceTypeFromValue(envVars?.EnergyDataSource);
 
-        switch (dataSourceType)
+        switch (carbonIntensityDataSourceType)
         {
             case DataSourceType.JSON:
             {
@@ -27,7 +29,16 @@ public static class ServiceCollectionExtensions
             }
             case DataSourceType.None:
             {
-                throw new NotSupportedException($"DataSourceType {dataSourceType.ToString()} not supported");
+                throw new NotSupportedException($"DataSourceType {carbonIntensityDataSourceType.ToString()} not supported");
+            }
+        }
+
+        switch (energyDataSourceType)
+        {
+            case DataSourceType.Azure:
+            {
+                    services.AddAzureDataSourceService();
+                    break;
             }
         }
     }
