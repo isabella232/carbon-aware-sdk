@@ -9,6 +9,8 @@ public class ComputeHardware
     // The two processors for this class of VM have different power consumption rates and total cores.
     // PowerPerCore = ("8370C TPD" + "8272CL TPD")/("8370C Cores" + "8272CL Cores") OR (270 + 195)/(32 + 26)
     // https://gadgetversus.com/processor/intel-xeon-platinum-8370c-vs-intel-xeon-platinum-8272cl/
+    // https://medium.com/teads-engineering/estimating-aws-ec2-instances-power-consumption-c9745e347959
+    // https://stackoverflow.com/questions/25835591/how-to-calculate-percentage-between-the-range-of-two-values-a-third-value-is
     private readonly Dictionary<string, (int Cores, double PowerPerCore)> _namedComputes = new Dictionary<string, (int Cores, double PowerPerCore)>()
     {
         // Edv4-series
@@ -19,7 +21,7 @@ public class ComputeHardware
         { "Azure.Standard_E20d_v4", (10, 8.01724) },
         { "Azure.Standard_E32d_v4", (16, 8.01724) },
         { "Azure.Standard_E48d_v4", (24, 8.01724) },
-        { "Azure.Standard_E64d_v4", (32, 8.01724) },
+        { "Azure.Standard_E64d_v4", (32, 8.4375) },
         // Edsv4-series
         { "Azure.Standard_E2ds_v4", (1, 8.01724) },
         { "Azure.Standard_E4ds_v4", (2, 8.01724) },

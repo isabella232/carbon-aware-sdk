@@ -9,6 +9,10 @@ namespace CarbonAware.Aggregators.Configuration;
 
 public static class ServiceCollectionExtensions
 {
+    public static void AddDataSourceFactory(this IServiceCollection services)
+    {
+        services.TryAddSingleton<DataSourceFactory>();
+    }
     /// <summary>
     /// Add services needed in order to pull data from a Carbon Intensity data source.
     /// </summary>

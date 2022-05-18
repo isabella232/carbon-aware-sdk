@@ -5,6 +5,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Compute;
+// using Azure.Monitor.Query;
+
+
 namespace CarbonAware.DataSources.Azure;
 
 /// <summary>
@@ -37,14 +44,50 @@ public class AzureDataSource : IPowerConsumptionDataSource
         this.ActivitySource = activitySource ?? throw new ArgumentNullException(nameof(activitySource));
     }
 
-    public Task<IEnumerable<double>> GetEnergyAsync(IEnumerable<ComputeResource> computeResources, DateTimeOffset periodStartTime, DateTimeOffset periodEndTime)
+    public Task<IEnumerable<PowerConsumptionData>> GetEnergyAsync(BaseComputeResource computeResource, DateTimeOffset periodStartTime, DateTimeOffset periodEndTime)
     {
+        /// https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor/management?view=azure-dotnet
+        /// https://stackoverflow.com/questions/54327418/get-cpu-utilization-of-virtual-machines-in-azure-using-python-sdk
+        /// https://docs.microsoft.com/en-us/azure/virtual-machines/linux/metrics-vm-usage-rest
+        /// https://github.com/Azure/azure-sdk-for-python/issues/9885
+        /// https://docs.microsoft.com/en-us/samples/azure-samples/monitor-dotnet-metrics-api/monitor-dotnet-metrics-api/
+
         // ArmClient armClient = new ArmClient(new DefaultAzureCredential());
         // Subscription subscription = await armClient.GetDefaultSubscriptionAsync();
         // string rgName = "myRgName";
         // ResourceGroup myRG = await subscription.GetResourceGroups().GetIfExistsAsync(rgName);
-        List<double> results = new List<double>();
-        results.Add(99.99);
-        return Task.FromResult(results as IEnumerable<double>);
+
+        // var credential = new DefaultAzureCredential();
+
+        // var metricsQueryClient = new MetricsQueryClient(credential);
+        var resource = computeResource as CloudComputeResource ?? throw new ArgumentException("computeResource must be of type CloudComputeResource");
+        resource.Hardware = new ComputeHardware($"Azure.{resource.VmType}");
+        
+        if( resource.UtilizationData == null )
+        {
+            // TODO - get the utilization data from Azure
+            throw new NotImplementedException("Fetching Usage metrics from Azure is not implemented yet");
+        }
+
+        return Task.FromResult(CalculationPowerConsumption(resource));
+    }
+
+    private IEnumerable<PowerConsumptionData> CalculationPowerConsumption(CloudComputeResource resource)
+    {
+        var cores = resource.Hardware.Cores;
+        var powerPerCore = resource.Hardware.PowerPerCore;
+        var resourceName = resource.Name;
+
+        foreach (var data in resource.UtilizationData)
+        {
+            double kwhEnergy = (cores * powerPerCore * data.CpuUtilizationPercentage * data.Duration.TotalHours)/1000;
+            yield return new PowerConsumptionData()
+            {
+                ComputeResourceName = resourceName,
+                Energy = kwhEnergy,
+                Timestamp = data.Timestamp,
+                Duration = data.Duration
+            };
+        }
     }
 }

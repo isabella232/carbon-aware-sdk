@@ -1,5 +1,6 @@
 using CarbonAware.Model;
 using CarbonAware.Interfaces;
+using CarbonAware.DataSources.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
@@ -14,16 +15,22 @@ public class SciScoreAggregator : ISciScoreAggregator
 
     private readonly ICarbonIntensityDataSource _carbonIntensityDataSource;
 
+    private readonly IPowerConsumptionDataSource _energyDataSource;
+
+    // private readonly DataSourceFactory _dataSourceFactory;
+
     /// <summary>
     /// Creates a new instance of the <see cref="SciScoreAggregator"/> class.
     /// </summary>
     /// <param name="logger">A logger for the SCI Score aggregator.</param>
     /// <param name="carbonIntensityDataSource">An <see cref="ICarbonIntensityDataSource"> data source.</param>
     /// <exception cref="ArgumentNullException">Can be thrown if no logger is provided.</exception>
-    public SciScoreAggregator(ILogger<SciScoreAggregator> logger, ICarbonIntensityDataSource carbonIntensityDataSource)
+    public SciScoreAggregator(ILogger<SciScoreAggregator> logger, ICarbonIntensityDataSource carbonIntensityDataSource, IPowerConsumptionDataSource energyDataSource)
     {
         this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this._carbonIntensityDataSource = carbonIntensityDataSource;
+        this._energyDataSource = energyDataSource;
+        // this._dataSourceFactory = dataSourceFactory;
     }
 
     /// <inheritdoc />
@@ -40,11 +47,20 @@ public class SciScoreAggregator : ISciScoreAggregator
     }
 
     /// <inheritdoc />
-    public async Task<double> CalculateEnergyAsync(IEnumerable<ComputeResource> computeResources, string timeInterval)
+    public async Task<double> CalculateEnergyAsync(IEnumerable<BaseComputeResource> computeResources, string timeInterval)
     {
         (DateTimeOffset start, DateTimeOffset end) = this.ParseTimeInterval(timeInterval);
+
+        // var dataSource = this._dataSourceFactory.GetEnergyDataSource(DataSourceType.Azure);
+
+        var value = 0.0;
+        foreach (var computeResource in computeResources)
+        {
+            var energyData = await this._energyDataSource.GetEnergyAsync(computeResource, start, end);
+            value += energyData.Sum(x => x.Energy);
+        }
         
-        return 99.99;
+        return value;
     }
 
     // Validate and parse time interval string into a tuple of (start, end) DateTimeOffsets.

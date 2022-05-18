@@ -1,10 +1,9 @@
 using CarbonAware.Interfaces;
-using CarbonAware.DataSources.Configuration;
 using CarbonAware.DataSources.Json;
 using CarbonAware.DataSources.WattTime;
 using CarbonAware.DataSources.Azure;
 
-namespace CarbonAware.DataSources.Registration;
+namespace CarbonAware.DataSources.Configuration;
 
 public class DataSourceFactory
 {

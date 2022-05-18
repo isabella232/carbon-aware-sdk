@@ -12,7 +12,12 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.6.0" />
-    <PackageReference Include="Microsoft.Azure.Management.Compute" Version="54.0.0" />
+    <PackageReference Include="Azure.Monitor.Query" Version="1.1.0" />
+    <PackageReference Include="Azure.ResourceManager" Version="1.0.0" />
+    <PackageReference Include="Azure.ResourceManager.Resources" Version="1.0.0" />
+    <PackageReference Include="Azure.ResourceManager.Compute" Version="1.0.0-preview.2 " />
+    <PackageReference Include="Microsoft.Azure.Management.Compute.Fluent" Version="1.38.1" />
+    <!-- <PackageReference Include="Microsoft.Azure.Management.Compute" Version="54.0.0" /> -->
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.2.0" />
   </ItemGroup>
 

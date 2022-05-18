@@ -1,6 +1,7 @@
 using CarbonAware.Aggregators.SciScore;
 using CarbonAware.Interfaces;
 using CarbonAware.Model;
+using CarbonAware.DataSources.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -19,13 +20,16 @@ public class SciScoreAggregatorTests
     private Mock<ILogger<SciScoreAggregator>> Logger { get; set; }
     private Mock<ICarbonIntensityDataSource> CarbonIntensityDataSource { get; set; }
     private SciScoreAggregator Aggregator { get; set; }
+    private DataSourceFactory DataSourceFactory { get; set; }
 
     [SetUp]
     public void Setup()
     {
         this.Logger = new Mock<ILogger<SciScoreAggregator>>();
         this.CarbonIntensityDataSource = new Mock<ICarbonIntensityDataSource>();
-        this.Aggregator = new SciScoreAggregator(this.Logger.Object, this.CarbonIntensityDataSource.Object);
+        var mockServiceProvider = new Mock<IServiceProvider>();
+        this.DataSourceFactory = new DataSourceFactory(mockServiceProvider.Object);
+        this.Aggregator = new SciScoreAggregator(this.Logger.Object, this.CarbonIntensityDataSource.Object, this.DataSourceFactory);
     }
 
     [TestCase("westus", "2021-11-17T00:00:00Z", "2021-11-20T00:00:00Z", ExpectedResult = 25)]

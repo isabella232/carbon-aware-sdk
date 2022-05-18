@@ -114,7 +114,8 @@ public class SciScoreController : ControllerBase
     }
 
 
-    [HttpPost("energy")]
+    // [HttpPost("energy")]
+    [HttpGet("energy")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -134,13 +135,38 @@ public class SciScoreController : ControllerBase
     // }
     /// <param name="input"> input from JSON request converted to input object with location and time interval </param>
     /// <returns>Result of the call to the aggregator to estimate energy consumption</returns>
-    public async Task<IActionResult> GetEnergyAsync(SciScoreInput input)
+    public async Task<IActionResult> GetEnergyAsync()
     {
         using (var activity = _activitySource.StartActivity(nameof(SciScoreController)))
         {
-            _logger.LogDebug("calling to aggregator to calculate the energy usage with input: {input}", input);
+            // _logger.LogDebug("calling to aggregator to calculate the energy usage with input: {input}", input);
+            var resources = new List<CloudComputeResource>()
+            {
+                new CloudComputeResource()
+                {
+                    Name = "vm-CSEGreenHack-01",
+                    VmType = "Standard_E64d_v4"
+                }
+            };
 
-            var energy = await _aggregator.CalculateEnergyAsync(input.ComputeResources, input.TimeInterval);
+            var data = new List<ComputeResourceUtilizationData>();
+            for (int i = 0; i < 6; i++)
+            {
+                int mins = i * 10;
+                var utilizationData = new ComputeResourceUtilizationData()
+                {
+                    Timestamp = new DateTimeOffset(2022, 5, 18, (mins/60), (mins%60), 0, TimeSpan.Zero),
+                    CpuUtilizationPercentage = 0.99,
+                    Duration = TimeSpan.FromMinutes(10)
+                };
+                data.Add(utilizationData);
+            }
+
+            resources[0].UtilizationData = data;
+
+            var timeInterval = "2022-05-18T00:00:00Z/2022-05-18T01:00:00Z";
+
+            var energy = await _aggregator.CalculateEnergyAsync(resources, timeInterval);
 
             SciScore score = new SciScore
             {

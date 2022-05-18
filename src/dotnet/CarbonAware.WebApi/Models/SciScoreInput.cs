@@ -9,8 +9,8 @@ public record SciScoreInput
     [JsonPropertyName("location")]
     public LocationInput? Location { get; set; }
 
-    [JsonPropertyName("computeResources")]
-    public IEnumerable<ComputeResource>? ComputeResources { get; set; }
+    // [JsonPropertyName("computeResources")]
+    // public IEnumerable<ComputeResource>? ComputeResources { get; set; }
 
     [JsonPropertyName("timeInterval")]
     public string TimeInterval { get; set; } = string.Empty;
