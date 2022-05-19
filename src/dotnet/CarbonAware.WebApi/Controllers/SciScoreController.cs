@@ -1,6 +1,7 @@
 using CarbonAware.Aggregators.SciScore;
 using CarbonAware.WebApi.Models;
 using CarbonAware.Model;
+using CarbonAware.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 using System.Diagnostics;
@@ -114,8 +115,7 @@ public class SciScoreController : ControllerBase
     }
 
 
-    // [HttpPost("energy")]
-    [HttpGet("energy")]
+    [HttpPost("energy")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,48 +125,52 @@ public class SciScoreController : ControllerBase
     //   "timeInterval": "",
     //   "computeResources": [
     //     {
-    //         "metricSource": "Azure"
-    //         "subscriptionId": "123",
-    //         "resourceGroup": "rg-mygroup",
-    //         "type": "Microsoft.Compute/virtualMachines",
-    //         "name": "vm-MyVirtualMachine"
+    //         "type": "CloudProvider",
+    //         "provider": "Azure",
+    //         "computeType": "Microsoft.Compute/virtualMachines",
+    //         "computeId": "vm-MyVirtualMachine"
+    //     },
+    //     {
+    //         "type": "RawData",
+    //         "computeId": "myId",
+    //         "powerConsumption": 0.012345
     //     }
     //   ]
     // }
     /// <param name="input"> input from JSON request converted to input object with location and time interval </param>
     /// <returns>Result of the call to the aggregator to estimate energy consumption</returns>
-    public async Task<IActionResult> GetEnergyAsync()
+    public async Task<IActionResult> GetEnergyAsync(SciScoreInput input)
     {
         using (var activity = _activitySource.StartActivity(nameof(SciScoreController)))
         {
             // _logger.LogDebug("calling to aggregator to calculate the energy usage with input: {input}", input);
-            var resources = new List<CloudComputeResource>()
-            {
-                new CloudComputeResource()
-                {
-                    Name = "vm-CSEGreenHack-01",
-                    VmType = "Standard_E64d_v4"
-                }
-            };
+            // var resources = new List<CloudComputeResource>()
+            // {
+            //     new CloudComputeResource()
+            //     {
+            //         Name = "vm-CSEGreenHack-01",
+            //         VmType = "Standard_E64d_v4"
+            //     }
+            // };
 
-            var data = new List<ComputeResourceUtilizationData>();
-            for (int i = 0; i < 6; i++)
-            {
-                int mins = i * 10;
-                var utilizationData = new ComputeResourceUtilizationData()
-                {
-                    Timestamp = new DateTimeOffset(2022, 5, 18, (mins/60), (mins%60), 0, TimeSpan.Zero),
-                    CpuUtilizationPercentage = 0.99,
-                    Duration = TimeSpan.FromMinutes(10)
-                };
-                data.Add(utilizationData);
-            }
+            // var data = new List<ComputeResourceUtilizationData>();
+            // for (int i = 0; i < 6; i++)
+            // {
+            //     int mins = i * 10;
+            //     var utilizationData = new ComputeResourceUtilizationData()
+            //     {
+            //         Timestamp = new DateTimeOffset(2022, 5, 18, (mins/60), (mins%60), 0, TimeSpan.Zero),
+            //         CpuUtilizationPercentage = 0.99,
+            //         Duration = TimeSpan.FromMinutes(10)
+            //     };
+            //     data.Add(utilizationData);
+            // }
 
-            resources[0].UtilizationData = data;
+            // resources[0].UtilizationData = data;
 
-            var timeInterval = "2022-05-18T00:00:00Z/2022-05-18T01:00:00Z";
+            // var timeInterval = "2022-05-19T13:00:00Z/2022-05-19T14:00:00Z";
 
-            var energy = await _aggregator.CalculateEnergyAsync(resources, timeInterval);
+            var energy = await _aggregator.CalculateEnergyAsync(input.Resources, input.TimeInterval);
 
             SciScore score = new SciScore
             {

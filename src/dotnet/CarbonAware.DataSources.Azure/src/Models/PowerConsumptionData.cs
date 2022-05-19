@@ -1,4 +1,4 @@
-namespace CarbonAware.Model;
+namespace CarbonAware.DataSources.Azure.Models;
 
 /// <summary>
 /// Represents the compute resource to query for usage metrics.

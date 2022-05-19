@@ -47,7 +47,7 @@ public class SciScoreAggregator : ISciScoreAggregator
     }
 
     /// <inheritdoc />
-    public async Task<double> CalculateEnergyAsync(IEnumerable<BaseComputeResource> computeResources, string timeInterval)
+    public async Task<double> CalculateEnergyAsync(IEnumerable<IComputeResource> computeResources, string timeInterval)
     {
         (DateTimeOffset start, DateTimeOffset end) = this.ParseTimeInterval(timeInterval);
 
@@ -56,8 +56,7 @@ public class SciScoreAggregator : ISciScoreAggregator
         var value = 0.0;
         foreach (var computeResource in computeResources)
         {
-            var energyData = await this._energyDataSource.GetEnergyAsync(computeResource, start, end);
-            value += energyData.Sum(x => x.Energy);
+            value += await this._energyDataSource.GetEnergyAsync(computeResource, start, end);
         }
         
         return value;

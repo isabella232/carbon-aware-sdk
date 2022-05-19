@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using CarbonAware.Model;
+using CarbonAware.Interfaces;
 
 namespace CarbonAware.WebApi.Models;
 
@@ -9,8 +9,8 @@ public record SciScoreInput
     [JsonPropertyName("location")]
     public LocationInput? Location { get; set; }
 
-    // [JsonPropertyName("computeResources")]
-    // public IEnumerable<ComputeResource>? ComputeResources { get; set; }
+    [JsonPropertyName("resources")]
+    public IEnumerable<ResourceInput>? Resources { get; set; }
 
     [JsonPropertyName("timeInterval")]
     public string TimeInterval { get; set; } = string.Empty;
@@ -33,4 +33,24 @@ public record LocationInput
 
     [JsonPropertyName("regionName")]
     public string? RegionName { get; set; }
+}
+
+[Serializable]
+public record ResourceInput : IComputeResource
+{
+    private Dictionary<string, string>? _properties;
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("processor")]
+    public string? Processor {
+        get => Properties.GetValueOrDefault("processor");
+        set => Properties.Add("processor", value ?? string.Empty);
+    }
+
+    public Dictionary<string, string> Properties {
+        get => _properties ??= new Dictionary<string, string>();
+        set => _properties = value;
+    }
 }
