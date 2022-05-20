@@ -55,6 +55,65 @@ public class AzureDataSource : IPowerConsumptionDataSource
         initializeVmSizeRepository();
     }
 
+    // TODO(bderusha) Remove this after resolver/emissions is abstracted
+    public AzureDataSource()
+    {
+        this.Logger = new Logger<AzureDataSource>(new LoggerFactory());
+        this.ActivitySource = new ActivitySource("AzureDataSource");
+        this.VmSizeRepository = new Dictionary<string, VmSizeDetails>();
+        this.ProcessorRepository = new Dictionary<string, Processor>();
+        initializeVmSizeRepository();
+    }
+
+    public async Task<IEnumerable<CloudComputeResource>> ResolveResourcesAsync(IEnumerable<IComputeResource> resources)
+    {
+        var computeResources = new List<CloudComputeResource>();
+        foreach (var resource in resources)
+        {
+            var computeResource = await this.ResolveResourceAsync(resource);
+            if (computeResource != null)
+            {
+                computeResources.Add(computeResource);
+            }
+        }
+
+        return computeResources;
+    }
+
+    public async Task<double> GetEmbodiedEmissionsAsync(IEnumerable<IComputeResource> resources, DateTimeOffset periodStartTime, DateTimeOffset periodEndTime)
+    {
+        var computeResources = new List<CloudComputeResource>();
+        foreach (var r in resources)
+        {
+            var resource = r as CloudComputeResource ?? throw new ArgumentException("The compute resource is not of type CloudComputeResource", nameof(r));
+            if(resource.UtilizationData != null)
+            {
+                resource = await GetVmUtilizationDataAsync(resource, periodStartTime, periodEndTime);
+            }
+            computeResources.Add(resource);
+        }
+
+        // 2000kgCO2 * 1000 = 2000000 gCO2
+        var totalEmbodiedEmissions = 2000000;
+        // 5 years == 43800 hours
+        var expectedLifespanHours = 43800;
+
+        double m = 0.0;
+        foreach (var resource in computeResources)
+        {
+            foreach(var data in resource.UtilizationData)
+            {
+                var timeReserved = data.Duration.TotalHours;
+                var timeShare = timeReserved / expectedLifespanHours;
+
+                var resourceShare = (double)resource.VmSize.Cores / resource.VmSize.Processor.TotalCores;
+                
+                m += totalEmbodiedEmissions * timeShare * resourceShare;
+            }
+        }
+        return m;
+    }
+
     public async Task<double> GetEnergyAsync(IComputeResource computeResource, DateTimeOffset periodStartTime, DateTimeOffset periodEndTime)
     {
         /// https://docs.microsoft.com/en-us/dotnet/api/overview/azure/monitor/management?view=azure-dotnet
@@ -63,69 +122,44 @@ public class AzureDataSource : IPowerConsumptionDataSource
         /// https://github.com/Azure/azure-sdk-for-python/issues/9885
         /// https://docs.microsoft.com/en-us/samples/azure-samples/monitor-dotnet-metrics-api/monitor-dotnet-metrics-api/
 
-        // ArmClient armClient = new ArmClient(new DefaultAzureCredential());
-        // Subscription subscription = await armClient.GetDefaultSubscriptionAsync();
-        // string rgName = "myRgName";
-        // ResourceGroup myRG = await subscription.GetResourceGroups().GetIfExistsAsync(rgName);
+        var resource = computeResource as CloudComputeResource ?? throw new ArgumentException("The compute resource is not of type CloudComputeResource", nameof(computeResource));
 
-        // var credential = new DefaultAzureCredential();
-
-        // var metricsQueryClient = new MetricsQueryClient(credential);
-        var resource = new CloudComputeResource(){
-            Name = computeResource.Name,
-            Properties = computeResource.Properties
-        };
-
-        resource = await GetVmDetailsAsync(resource);
-        
-        if( resource.UtilizationData == null )
-        {
-            resource = await GetVmUtilizationDataAsync(resource, periodStartTime, periodEndTime);
-        }
+        resource = await GetVmUtilizationDataAsync(resource, periodStartTime, periodEndTime);
 
         return CalculationPowerConsumption(resource);
     }
-
-    private async Task<CloudComputeResource> GetVmDetailsAsync(CloudComputeResource computeResource)
+    private async Task<CloudComputeResource> ResolveResourceAsync(IComputeResource resource)
     {
+        var computeResource = new CloudComputeResource(){
+            Name = resource.Name,
+            Properties = resource.Properties
+        };
         var subscriptionId = Environment.GetEnvironmentVariable("AZURE_SUBSCRIPTION_ID");
         var resourceGroupName = Environment.GetEnvironmentVariable("AZURE_RESOURCE_GROUP_NAME");
-        var vmName = computeResource.Name;
+        var vmName = resource.Name;
         var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}";
 
         var credential = new DefaultAzureCredential();
         ArmClient armClient = new ArmClient(new DefaultAzureCredential());
-
         GenericResource vm = await armClient.GetGenericResource(new ResourceIdentifier(resourceId)).GetAsync();
-        var location = vm.Data.Location.Name;
-        var props = vm.Data.Properties.ToObjectFromJson<VmProperties>();
-        var vmSize = props.hardwareProfile.vmSize;
 
-        computeResource.VmSize = this.VmSizeRepository[vmSize];
+        var location = vm.Data.Location.Name;
+        computeResource.Location = new Location(){
+            LocationType = LocationType.CloudProvider,
+            CloudProvider = CloudProvider.Azure,
+            RegionName = location
+        };
+        var props = vm.Data.Properties.ToObjectFromJson<VmProperties>();
+        var vmSizeName = props.hardwareProfile.vmSize;
+        var vmSizeDetails = this.VmSizeRepository[vmSizeName];
+
         if(!string.IsNullOrWhiteSpace(computeResource.ProcessorName))
         {
-            computeResource.VmSize.Processor = this.ProcessorRepository[computeResource.ProcessorName];
+            vmSizeDetails.Processor = this.ProcessorRepository[computeResource.ProcessorName];
         }
-        // SubscriptionResource subscription = await armClient.GetDefaultSubscriptionAsync();
-        // ResourceGroupResource resourceGroup = await subscription.GetResourceGroupAsync(resourceGroupName);
 
-        // // Next we get the collection for the virtual machines
-        // // vmCollection is a [Resource]Collection object from above
-        // AsyncPageable<GenericResource> vmCollection = resourceGroup.GetGenericResourcesAsync($"resourceType eq 'Microsoft.Compute/virtualMachines' and name eq '{vmName}'");
+        computeResource.VmSize = vmSizeDetails;
 
-        // await foreach (GenericResource vm in vmCollection)
-        // {
-        //     var data = vm.Data;
-        //     var regionName = data.Location.Name;
-
-        // }
-
-        // Next we get the AvailabilitySet resource client from the armClient
-        // The method takes in a ResourceIdentifier but we can use the implicit cast from string
-        // VirtualMachine availabilitySet = armClient.GetAvailabilitySet(resourceId);
-        // // At this point availabilitySet.Data will be null and trying to access it will throw
-        // // If we want to retrieve the objects data we can simply call get
-        // availabilitySet = await availabilitySet.GetAsync();
         return computeResource;
     }
 
@@ -188,7 +222,7 @@ public class AzureDataSource : IPowerConsumptionDataSource
         double result = 0.0;
         foreach (var data in resource.UtilizationData)
         {
-            var powerDraw = ((data.CpuUtilizationPercentage * (maxPower - idlePower) / 100) + idlePower) /1000; // KiloWatts
+            var powerDraw = ((data.CpuUtilizationPercentage * (maxPower - idlePower)) + idlePower) /1000; // KiloWatts
             var coreProportion = (double)allocatedCores / totalCores;
             result += (coreProportion * powerDraw * data.Duration.TotalHours);
         }

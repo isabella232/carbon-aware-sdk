@@ -6,8 +6,6 @@ namespace CarbonAware.DataSources.Azure.Models;
 public class VmSizeDetails
 {
     // VM and hardware specs taken from https://docs.microsoft.com/en-us/azure/virtual-machines/edv4-edsv4-series
-    // The two processors for this class of VM have different power consumption rates and total cores.
-    // PowerPerCore = ("8370C TPD" + "8272CL TPD")/("8370C Cores" + "8272CL Cores") OR (270 + 195)/(32 + 26)
     // https://gadgetversus.com/processor/intel-xeon-platinum-8370c-vs-intel-xeon-platinum-8272cl/
     // https://medium.com/teads-engineering/estimating-aws-ec2-instances-power-consumption-c9745e347959
     // https://stackoverflow.com/questions/25835591/how-to-calculate-percentage-between-the-range-of-two-values-a-third-value-is

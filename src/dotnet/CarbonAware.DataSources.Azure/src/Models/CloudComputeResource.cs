@@ -1,4 +1,5 @@
 using CarbonAware.Interfaces;
+using CarbonAware.Model;
 
 namespace CarbonAware.DataSources.Azure.Models;
 
@@ -10,7 +11,7 @@ public class CloudComputeResource : IComputeResource
 
     public IEnumerable<ComputeResourceUtilizationData> UtilizationData { get; set; }
 
-    public string RegionName { get; set; }
+    public Location Location { get; set; }
 
     public string? ProcessorName {
         get => Properties.GetValueOrDefault("processor");

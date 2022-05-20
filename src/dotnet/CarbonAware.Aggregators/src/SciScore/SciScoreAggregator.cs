@@ -1,8 +1,12 @@
 using CarbonAware.Model;
+using SciScoreModel = CarbonAware.Model.SciScore;
 using CarbonAware.Interfaces;
 using CarbonAware.DataSources.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
+
+//TODO(bderusha) Remove this after resolver is abstracted
+using CarbonAware.DataSources.Azure;
 
 namespace CarbonAware.Aggregators.SciScore;
 
@@ -33,6 +37,32 @@ public class SciScoreAggregator : ISciScoreAggregator
         // this._dataSourceFactory = dataSourceFactory;
     }
 
+    public async Task<SciScoreModel> CalculateSciScoreAsync(IEnumerable<IComputeResource> computeResources, string timeInterval)
+    {
+        var resources = await resolveResources(computeResources);
+        double totalCI = 0.0;
+        double totalEnergy = 0.0;
+        double embodiedEmissions = 0.0;
+        int functionalUnit = 1;
+        foreach (var resource in resources)
+        {
+            totalCI += await CalculateAverageCarbonIntensityAsync(resource.Location, timeInterval);
+        }
+        totalEnergy = await CalculateEnergyAsync(resources, timeInterval);
+        embodiedEmissions = await CalculateEmbodiedEmissionsAsync(resources, timeInterval);
+        
+        var score = new SciScoreModel()
+        {
+            MarginalCarbonIntensityValue = totalCI,
+            EnergyValue = totalEnergy,
+            EmbodiedEmissionsValue = embodiedEmissions,
+            FunctionalUnitValue = functionalUnit,
+            SciScoreValue = ((totalEnergy * totalCI) + embodiedEmissions)/functionalUnit
+        };
+
+        return score;
+    }
+
     /// <inheritdoc />
     public async Task<double> CalculateAverageCarbonIntensityAsync(Location location, string timeInterval)
     {
@@ -60,6 +90,21 @@ public class SciScoreAggregator : ISciScoreAggregator
         }
         
         return value;
+    }
+
+    private async Task<double> CalculateEmbodiedEmissionsAsync(IEnumerable<IComputeResource> computeResources, string timeInterval)
+    {
+        (DateTimeOffset start, DateTimeOffset end) = this.ParseTimeInterval(timeInterval);
+        /// TODO(bderusha) Abstract this into a new datasource interface
+        var embodiedEmissionsDataSource = new AzureDataSource();
+        return await embodiedEmissionsDataSource.GetEmbodiedEmissionsAsync(computeResources, start, end);
+    }
+
+    private async Task<IEnumerable<IComputeResource>> resolveResources(IEnumerable<IComputeResource> computeResources)
+    {
+        /// TODO(bderusha) Abstract this into a new datasource interface
+        var resolver = new AzureDataSource();
+        return await resolver.ResolveResourcesAsync(computeResources);
     }
 
     // Validate and parse time interval string into a tuple of (start, end) DateTimeOffsets.

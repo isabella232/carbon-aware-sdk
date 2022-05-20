@@ -1,5 +1,6 @@
 using CarbonAware.Aggregators.SciScore;
 using CarbonAware.WebApi.Models;
+using SerializableSciScore = CarbonAware.WebApi.Models.SciScore;
 using CarbonAware.Model;
 using CarbonAware.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -36,33 +37,13 @@ public class SciScoreController : ControllerBase
     /// <param name="input"> input from JSON request converted to input object with location and time interval </param>
     /// <returns>Result of the call to the aggregator that calculates the sci score</returns>
 
-    public Task<IActionResult> CreateAsync(SciScoreInput input)
+    public async Task<IActionResult> CreateAsync(SciScoreInput input)
     {
         _logger.LogDebug("calculate sciscore with input: {input}", input);
-        if (input.Location == null)
-        {
-            var error = new CarbonAwareWebApiError() { Message = "Location is required" };
-            _logger.LogDebug("calculation failed with error: {error}", error);
-            return Task.FromResult<IActionResult>(BadRequest(error));
-        }
 
-        if (String.IsNullOrEmpty(input.TimeInterval))
-        {
-            var error = new CarbonAwareWebApiError() { Message = "TimeInterval is required" };
-            _logger.LogDebug("calculation failed with error: {error}", error);
-            return Task.FromResult<IActionResult>(BadRequest(error));
-        }
-
-        var score = new SciScore
-        {
-            SciScoreValue = 100.0,
-            EnergyValue = 1.0,
-            MarginalCarbonIntensityValue = 100.0,
-            EmbodiedEmissionsValue = 0.0,
-            FunctionalUnitValue = 1
-        };
+        var score = await _aggregator.CalculateSciScoreAsync(input.Resources, input.TimeInterval);
         _logger.LogDebug("calculated sciscore values: {score}", score);
-        return Task.FromResult<IActionResult>(Ok(score));
+        return Ok(score);
     }
 
     [HttpPost("marginal-carbon-intensity")]
@@ -97,7 +78,7 @@ public class SciScoreController : ControllerBase
             {
                 var carbonIntensity = await _aggregator.CalculateAverageCarbonIntensityAsync(GetLocation(input.Location), input.TimeInterval);
 
-                SciScore score = new SciScore
+                SerializableSciScore score = new SerializableSciScore
                 {
                     MarginalCarbonIntensityValue = carbonIntensity,
                 };
@@ -172,7 +153,7 @@ public class SciScoreController : ControllerBase
 
             var energy = await _aggregator.CalculateEnergyAsync(input.Resources, input.TimeInterval);
 
-            SciScore score = new SciScore
+            SerializableSciScore score = new SerializableSciScore
             {
                 EnergyValue = energy,
             };

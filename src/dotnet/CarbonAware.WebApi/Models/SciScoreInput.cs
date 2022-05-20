@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CarbonAware.Interfaces;
+using CarbonAware.Model;
 
 namespace CarbonAware.WebApi.Models;
 
@@ -42,6 +43,9 @@ public record ResourceInput : IComputeResource
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
+
+    [JsonPropertyName("location")]
+    public Location? Location { get; set; }
 
     [JsonPropertyName("processor")]
     public string? Processor {
