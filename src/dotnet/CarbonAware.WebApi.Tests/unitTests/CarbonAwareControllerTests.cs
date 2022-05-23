@@ -35,10 +35,12 @@ public class CarbonAwareControllerTests : TestsBase
         IActionResult ar1 = await controller.GetEmissionsDataForLocationByTime(location);
         IActionResult ar2 = await controller.GetBestEmissionsDataForLocationsByTime(new string[] { location });
         IActionResult ar3 = await controller.GetEmissionsDataForLocationsByTime(new string[] { location });
+        IActionResult ar4 = await controller.GetAverageEmissionsDataForLocationByTime(location, DateTime.Now, DateTime.Now);
 
         TestHelpers.AssertStatusCode(ar1, HttpStatusCode.OK);
         TestHelpers.AssertStatusCode(ar2, HttpStatusCode.OK);
         TestHelpers.AssertStatusCode(ar3, HttpStatusCode.OK);
+        TestHelpers.AssertStatusCode(ar4, HttpStatusCode.OK);
     }
 
     /// <summary>
@@ -53,10 +55,12 @@ public class CarbonAwareControllerTests : TestsBase
         IActionResult ar1 = await controller.GetEmissionsDataForLocationByTime(location);
         IActionResult ar2 = await controller.GetBestEmissionsDataForLocationsByTime(new string[] { location });
         IActionResult ar3 = await controller.GetEmissionsDataForLocationsByTime(new string[] { location });
+        IActionResult ar4 = await controller.GetAverageEmissionsDataForLocationByTime(location, DateTime.Now, DateTime.Now);
 
         //Assert
         TestHelpers.AssertStatusCode(ar1, HttpStatusCode.NoContent);
         TestHelpers.AssertStatusCode(ar2, HttpStatusCode.NoContent);
         TestHelpers.AssertStatusCode(ar3, HttpStatusCode.NoContent);
+        TestHelpers.AssertStatusCode(ar4, HttpStatusCode.NoContent);
     }
 }
