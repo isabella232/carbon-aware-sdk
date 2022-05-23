@@ -1,6 +1,7 @@
 ﻿using CarbonAware.Interfaces;
 using CarbonAware.Model;
 using CarbonAware.DataSources.Azure.Models;
+using CarbonAware.DataSources.Azure.ResourceManagers;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ public class AzureDataSource : IPowerConsumptionDataSource
     private Dictionary<string, VmSizeDetails> VmSizeRepository { get; }
     private Dictionary<string, Processor> ProcessorRepository { get; }
 
-
+    private readonly ResourceManagerFactory ResourceManagerFactory = new ResourceManagerFactory();
 
     /// <summary>
     /// Creates a new instance of the <see cref="AzureDataSource"/> class.
@@ -122,11 +123,9 @@ public class AzureDataSource : IPowerConsumptionDataSource
         /// https://github.com/Azure/azure-sdk-for-python/issues/9885
         /// https://docs.microsoft.com/en-us/samples/azure-samples/monitor-dotnet-metrics-api/monitor-dotnet-metrics-api/
 
-        var resource = computeResource as CloudComputeResource ?? throw new ArgumentException("The compute resource is not of type CloudComputeResource", nameof(computeResource));
+        var manager = this.ResourceManagerFactory.Create(computeResource.Type);
 
-        resource = await GetVmUtilizationDataAsync(resource, periodStartTime, periodEndTime);
-
-        return CalculationPowerConsumption(resource);
+        return await manager.GetEnergyAsync(resource, periodStartTime, periodEndTime);
     }
     private async Task<CloudComputeResource> ResolveResourceAsync(IComputeResource resource)
     {
