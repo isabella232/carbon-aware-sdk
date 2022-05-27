@@ -1,0 +1,7 @@
+cawebapimap:
+ - name: "CarbonAwareVars__CarbonIntensityDataSource"
+   value: "WattTime"
+ - name:  "WattTimeClient__Username"
+   value: "testuser"
+ - name: "WattTimeClient__Password"
+   value: "testpasswd"

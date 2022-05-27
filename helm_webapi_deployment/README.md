@@ -43,11 +43,14 @@
     ```sh
     helm install ca-webapi-chart .
     ```
+
+    - Verify that pod is running
     ```sh
     kubectl get po
-    kubectl logs ca-webapi-chart-b49c9b8df-2bdd9
-    kubectl describe po ca-webapi-chart-b49c9b8df-2bdd9
+    kubectl logs ca-webapi-chart-<id>
+    kubectl describe po ca-webapi-<id>
     ```
+
 - Connect to WebApi service based on the output after the installation of the chart
 
     ```sh
@@ -63,7 +66,18 @@
     ```
 
 - Setup env variables to access to backend service (i.e WattTime)
-    
+    - Create file to set environment variables (see [env-values.yml](./ca-deploy-charts/env-values.yaml))
+    - Modify [deployment.yaml](./ca-deploy-charts/templates/deployment.yaml) to include reference to `env` names/values
+    - Uninstall previous charts if that is the case
+        ```sh
+        helm uninstall ca-webapi-chart
+        ```
+    - Install chart with new env var values
+        ```sh
+        helm install -f env-values.yaml ca-webapi-chart .
+        ```
+    - Set up again `POD_NAME` and `CONTAINER_PORT` in order to access the service
+    - Perform http request (should see data coming from data source provider (i.e WattTime))
 
 
 ## References
