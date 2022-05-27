@@ -1,0 +1,83 @@
+# Install WebApi in Toy AKS
+
+## Pre
+- Check for ARC and AKS services already set (azure portal)
+
+- Build local container for dev with the features: "kubectl-helm-minikube" and "azure-cli" so it is easier to run Helm, Kubectl and Azure CLI commands on the dev container.
+
+- Build CarbonAware WebApi image using this [Dockerfile](../src/dotnet/Dockerfile) and upload it to ACR
+    ```sh
+    cd ../src/dotnet/Dockerfile
+    docker login <arcserver>.azurecr.io
+    docker build -t ca_webapi-<ver>:<tag>
+    docker tag ca_webapi_<ver>:<tag> <arcserver>.azurecr.io/ca_webapi_<ver>:<tag>
+    docker push <arcserver>.azurecr.io/ca_webapi_<ver>:<tag>
+    ```
+
+- Create Helm charts default (one time only)
+    ```sh
+    helm create ca-deploy-charts
+    ```
+    - Modify `templates/deployment.yaml` and `values.yaml` with the appropiate information to pull from ACR and set liveness and readiness properties correctly.
+
+- Check installation and running pod(s) with `kubectl`
+    - Login to Azure
+    ```sh
+    az login
+    ```
+    - Register subscription and set AKS credentials following the stesp at `Connect to <MY_AKS>` on the azure portal.
+    ```sh
+    az account set --subscription <>
+    az aks ...
+    ...
+    ```
+    - Verify that `kubectl` can access AKS.
+    ```sh
+    kubectl get deployments --all-namespaces=true
+    ```
+    - Configure `helm` with ACR credentials. 
+     ```sh
+     helm registry login <arcserver>.azurecr.io --username <username> --password <passwd>
+     ```
+    - Deploy App using `helm` charts
+    ```sh
+    helm install ca-webapi-chart .
+    ```
+    ```sh
+    kubectl get po
+    kubectl logs ca-webapi-chart-b49c9b8df-2bdd9
+    kubectl describe po ca-webapi-chart-b49c9b8df-2bdd9
+    ```
+- Connect to WebApi service based on the output after the installation of the chart
+
+    ```sh
+    Get the application URL by running these commands:
+    export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=ca-webapi-helm,app.kubernetes.io/instance=ca-webapi-chart" -o jsonpath="{.items[0].metadata.name}")
+    export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+    echo "Visit http://127.0.0.1:8080 to use your application"
+    kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+    ```
+    On the local machine, use an http client and do for instance:
+    ```sh
+    curl http://127.0.0.1:8080/emissions/bylocation?location=eastus
+    ```
+
+- Setup env variables to access to backend service (i.e WattTime)
+    
+
+
+## References
+[Helm local Instructions](../samples/helmexample/README.md)
+
+[Helm quickstart](https://helm.sh/docs/intro/quickstart/)
+
+[Helm env vars](https://jhooq.com/helm-pass-environment-variables/)
+
+
+
+
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=ca-webapi-helm,app.kubernetes.io/instance=ca-webapi-chart" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
