@@ -82,15 +82,18 @@
 - Setup LoadBalancer
     - If the goal is to 'expose' the web service through a public ip, change the [values.yaml](./ca-deploy-charts/values.yaml) service:cluster type to `LoadBalance` and redeploy.
     - AKS would display what ip can be used to access it. Use `kubectl get service` for instance
+
     ```sh
-    kubectl get svc
+    kubectl get service
     NAME                 TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
     ...
     ca-webapi-chart      LoadBalancer   10.0.53.91    52.226.221.208   80:31753/TCP   18s
     ...
+
     ``` 
     - Request the data using the EXTERNAL-IP
-    ```sg
+    
+    ```sh
     curl -v http://52.226.221.208/emissions/bylocation?location=eastus
     ```
 
