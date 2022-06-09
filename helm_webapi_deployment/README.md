@@ -5,7 +5,7 @@
 
 - Build local container for dev with the features: "kubectl-helm-minikube" and "azure-cli" so it is easier to run Helm, Kubectl and Azure CLI commands on the dev container.
 
-- Build CarbonAware WebApi image using this [Dockerfile](src/Dockerfile) and upload it to ACR
+- Build CarbonAware WebApi image using this [Dockerfile](../src/Dockerfile) and upload it to ACR
   (i.e using `docker`)
     ```sh
     cd src
@@ -32,7 +32,7 @@
     ```sh
     az login  --use-device-code
     ```
-    - Register subscription and set AKS credentials following the stesp at `Connect to <MY_AKS>` on the azure portal.
+    - Register subscription and set AKS credentials following the steps at `Connect to <MY_AKS>` on the azure portal.
     ```sh
     az account set --subscription <>
     az aks ...
@@ -48,6 +48,7 @@
      ```
     - Deploy App using `helm` charts
     ```sh
+    cd helm_webapi_deployment/ca-deploy-charts
     helm install ca-webapi-chart .
     ```
 
@@ -87,7 +88,7 @@
     - Perform http request (should see data coming from data source provider (i.e WattTime))
 
 - Setup LoadBalancer
-    - If the goal is to 'expose' the web service through a public ip, change the [values.yaml](./ca-deploy-charts/values.yaml) service:cluster type to `LoadBalance` and redeploy.
+    - If the goal is to 'expose' the web service through a public ip, change the [values.yaml](./ca-deploy-charts/values.yaml) service:cluster type to `LoadBalancer` and redeploy.
     - AKS would display what ip can be used to access it. Use `kubectl get service` for instance
 
     ```sh
