@@ -3,9 +3,9 @@
 ## Pre
 - Check for ARC and AKS services already set (azure portal)
 
-- Build local container for dev with the features: "kubectl-helm-minikube" and "azure-cli" so it is easier to run Helm, Kubectl and Azure CLI commands on the dev container.
+- Build local container for development with the [devcontainer](./../.devcontainer/devcontainer.json) features: `kubectl-helm-minikube` and `azure-cli` so it is easier to run Helm, Kubectl and Azure CLI commands on the dev container.
 
-- Build CarbonAware WebApi image using this [Dockerfile](../src/Dockerfile) and upload it to ACR
+- Build and push CarbonAware WebApi image using this [Dockerfile](../src/Dockerfile) to ACR
   (i.e using `docker`)
     ```sh
     cd src
@@ -16,7 +16,8 @@
     ```
   (i.e using `az acr build`)
     ```sh
-    az login  --use-device-code
+    cd src
+    az login --use-device-code
     az account set --subscription <>
     az acr build --image ca_webapi_<ver>:<tag> --registry <ACR Registry Name> --file Dockerfile .
     ```
