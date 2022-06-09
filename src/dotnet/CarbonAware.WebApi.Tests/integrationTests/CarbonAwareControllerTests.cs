@@ -1,22 +1,8 @@
 namespace CarbonAware.WepApi.IntegrationTests;
 
-using System;
-using System.Collections.Generic;
 using System.Net;
-using CarbonAware.Model;
-using CarbonAware.WebApi.Controllers;
-using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Net.Http.Json;
-using Moq;
-using System.Net.Http.Headers;
-
-public class APIWebApplicationFactory : WebApplicationFactory<Program>
-{
-
-}
+using CarbonAware.Tools.WattTimeClient;
 
 /// <summary>
 /// Tests that the Web API controller handles and packages various responses from a plugin properly 
@@ -35,6 +21,8 @@ public class CarbonAwareControllerTests
     {
         _factory = new APIWebApplicationFactory();
         _client = _factory.CreateClient();
+        // NOTE: in order to use service simulator, override WattTime baseURL to localhost:8888
+        WattTimeServiceSimulator.StartListener();
     }
 
     [Test]
@@ -73,5 +61,6 @@ public class CarbonAwareControllerTests
     {
         _client.Dispose();
         _factory.Dispose();
+        WattTimeServiceSimulator.StopListener();
     }
 }
