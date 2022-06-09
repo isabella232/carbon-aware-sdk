@@ -5,13 +5,20 @@
 
 - Build local container for dev with the features: "kubectl-helm-minikube" and "azure-cli" so it is easier to run Helm, Kubectl and Azure CLI commands on the dev container.
 
-- Build CarbonAware WebApi image using this [Dockerfile](../src/dotnet/Dockerfile) and upload it to ACR
+- Build CarbonAware WebApi image using this [Dockerfile](src/Dockerfile) and upload it to ACR
+  (i.e using `docker`)
     ```sh
-    cd ../src/dotnet/Dockerfile
+    cd src
     docker login <arcserver>.azurecr.io
     docker build -t ca_webapi-<ver>:<tag>
     docker tag ca_webapi_<ver>:<tag> <arcserver>.azurecr.io/ca_webapi_<ver>:<tag>
     docker push <arcserver>.azurecr.io/ca_webapi_<ver>:<tag>
+    ```
+  (i.e using `az acr build`)
+    ```sh
+    az login  --use-device-code
+    az account set --subscription <>
+    az acr build --image ca_webapi_<ver>:<tag> --registry <ACR Registry Name> --file Dockerfile .
     ```
 
 - Create Helm charts default (one time only)
@@ -23,7 +30,7 @@
 - Check installation and running pod(s) with `kubectl`
     - Login to Azure
     ```sh
-    az login
+    az login  --use-device-code
     ```
     - Register subscription and set AKS credentials following the stesp at `Connect to <MY_AKS>` on the azure portal.
     ```sh
