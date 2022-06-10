@@ -8,28 +8,29 @@ public static class ServiceCollectionExtensions
 {
     public static void AddDataSourceService(this IServiceCollection services, IConfiguration configuration)
     {
-        // find all the Classes in the Assembly that implements AddEmissionServices method,
-        // and added them here with the specific implementation class.
-        var envVars = configuration?.GetSection(CarbonAwareVariablesConfiguration.Key).Get<CarbonAwareVariablesConfiguration>();
-        var dataSourceType = GetDataSourceTypeFromValue(envVars?.CarbonIntensityDataSource);
+        services.AddWattTimeDataSourceService(configuration);
+        /*        // find all the Classes in the Assembly that implements AddEmissionServices method,
+                // and added them here with the specific implementation class.
+                var envVars = configuration?.GetSection(CarbonAwareVariablesConfiguration.Key).Get<CarbonAwareVariablesConfiguration>();
+                var dataSourceType = GetDataSourceTypeFromValue(envVars?.CarbonIntensityDataSource);
 
-        switch (dataSourceType)
-        {
-            case DataSourceType.JSON:
-            {
-                    services.AddJsonDataSourceService();
-                    break;
-            }
-            case DataSourceType.WattTime:
-            {
-                    services.AddWattTimeDataSourceService(configuration);
-                    break;
-            }
-            case DataSourceType.None:
-            {
-                throw new NotSupportedException($"DataSourceType {dataSourceType.ToString()} not supported");
-            }
-        }
+                switch (dataSourceType)
+                {
+                    case DataSourceType.JSON:
+                    {
+                            services.AddJsonDataSourceService();
+                            break;
+                    }
+                    case DataSourceType.WattTime:
+                    {
+                            services.AddWattTimeDataSourceService(configuration);
+                            break;
+                    }
+                    case DataSourceType.None:
+                    {
+                        throw new NotSupportedException($"DataSourceType {dataSourceType.ToString()} not supported");
+                    }
+                }*/
     }
     private static DataSourceType GetDataSourceTypeFromValue(string? srcVal)
     {

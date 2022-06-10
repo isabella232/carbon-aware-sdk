@@ -11,17 +11,18 @@ public class WattTimeClientConfiguration
     /// <summary>
     /// Gets or sets the username to use when connecting to WattTime.
     /// </summary>
-    public string? Username { get; set; }
+    public string? Username { get; set; } = "tempuser";
 
     /// <summary>
     /// Gets or sets the password to use when connecting to WattTime
     /// </summary>
-    public string? Password { get; set; }
+    public string? Password { get; set; } = "tempapss";
 
     /// <summary>
     /// Gets or sets the base url to use when connecting to WattTime
     /// </summary>
-    public string BaseUrl { get; set; } = "https://api2.watttime.org/v2/";
+    public string BaseUrl { get; set; } = "http://localhost:8888/";
+        // "https://api2.watttime.org/v2/";
 
     /// <summary>
     /// Validate that this object is properly configured.

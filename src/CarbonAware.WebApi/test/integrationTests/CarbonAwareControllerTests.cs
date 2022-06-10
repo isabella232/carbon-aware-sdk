@@ -30,7 +30,7 @@ public class CarbonAwareControllerTests
         _factory = new APIWebApplicationFactory();
         _client = _factory.CreateClient();
 
-        _server = WireMockServer.Start();
+        _server = WireMockServer.Start(8888);
         _server.SetupWattTimeServerMocks();
 
     }
@@ -55,7 +55,9 @@ public class CarbonAwareControllerTests
     [Test]
     public async Task BestLocations_ReturnsOK()
     {
-        var stringUri = "/emissions/bylocations/best?locations=eastus&locations=westus&time=2022-01-01&toTime=2022-05-17";
+        var start = WattTimeServerMocks.GetTestDataPointOffset().DateTime;
+        var end = WattTimeServerMocks.GetTestDataPointOffset().DateTime.AddDays(1);
+        var stringUri = $"/emissions/bylocations/best?locations=eastus&time={start:yyyy-MM-dd}&toTime={end:yyyy-MM-dd}";
 
         var result = await _client.GetAsync(stringUri);
         //Get actual response content
