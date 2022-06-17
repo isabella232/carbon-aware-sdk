@@ -2,7 +2,6 @@ using System.Reflection;
 using CarbonAware;
 using CarbonAware.Aggregators.Configuration;
 using CarbonAware.WebApi.Filters;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +30,9 @@ CarbonAwareVariablesConfiguration config = new CarbonAwareVariablesConfiguration
 builder.Configuration.GetSection(CarbonAwareVariablesConfiguration.Key).Bind(config);
 
 builder.Services.AddHealthChecks();
+
+// AppInsights connection string should be specified as an environment variable for this to work
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
