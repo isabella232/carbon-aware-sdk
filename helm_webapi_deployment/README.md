@@ -85,6 +85,11 @@
         ```sh
         helm install -f env-values.yaml ca-webapi-chart .
         ```
+    - Upgrade chart for instance when changes in the case base are made:
+        ```sh
+        helm upgrade -f env-values.yaml ca-webapi-chart .
+        ```
+      This will keep the same pod's ip address.
     - Set up again `POD_NAME` and `CONTAINER_PORT` in order to access the service
     - Perform http request (should see data coming from data source provider (i.e WattTime))
 
