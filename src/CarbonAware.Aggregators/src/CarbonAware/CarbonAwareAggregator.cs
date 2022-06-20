@@ -1,9 +1,10 @@
-using CarbonAware.Model;
-using CarbonAware.Interfaces;
 using CarbonAware.Extensions;
+using CarbonAware.Interfaces;
+using CarbonAware.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace CarbonAware.Aggregators.CarbonAware;
 
@@ -29,7 +30,7 @@ public class CarbonAwareAggregator : ICarbonAwareAggregator
     {
         using (var activity = Activity.StartActivity())
         {
-            DateTimeOffset end = GetOffsetOrDefault(props, CarbonAwareConstants.End, DateTimeOffset.Now);
+            DateTimeOffset end = GetOffsetOrDefault(props, CarbonAwareConstants.End, DateTimeOffset.Now.ToUniversalTime());
             DateTimeOffset start = GetOffsetOrDefault(props, CarbonAwareConstants.Start, end.AddDays(-7));
             _logger.LogInformation("Aggregator getting carbon intensity from data source");
             return await this._dataSource.GetCarbonIntensityAsync(GetLocationOrThrow(props), start, end);
@@ -41,7 +42,7 @@ public class CarbonAwareAggregator : ICarbonAwareAggregator
     {
         using (var activity = Activity.StartActivity())
         {
-            DateTimeOffset start = GetOffsetOrDefault(props, CarbonAwareConstants.Start, DateTimeOffset.Now);
+            DateTimeOffset start = GetOffsetOrDefault(props, CarbonAwareConstants.Start, DateTimeOffset.Now.ToUniversalTime());
             DateTimeOffset end = GetOffsetOrDefault(props, CarbonAwareConstants.End,  start.AddDays(1));
             TimeSpan windowSize = GetDurationOrDefault(props);
             _logger.LogInformation("Aggregator getting carbon intensity forecast from data source");
@@ -83,7 +84,7 @@ public class CarbonAwareAggregator : ICarbonAwareAggregator
         var dateTimeOffset = props[field] ?? defaultValue;
 
         // If fail to parse property, throw error
-        if (!DateTimeOffset.TryParse(dateTimeOffset.ToString(), out defaultValue))
+        if (!DateTimeOffset.TryParse(dateTimeOffset.ToString(), null, DateTimeStyles.AssumeUniversal, out defaultValue))
         {
             Exception ex = new ArgumentException("Failed to parse" + field + "field. Must be a valid DateTimeOffset");
             _logger.LogError("argument exception", ex);
@@ -111,25 +112,4 @@ public class CarbonAwareAggregator : ICarbonAwareAggregator
         }
         return defaultValue;
     }
-
-    public async Task<double> CalcEmissionsAverageAsync(IDictionary props)
-    {
-        ValidateAverageProps(props);
-        var list = await GetEmissionsDataAsync(props);
-        // check whether the list if empty, if not, return Rating's average, otherwise 0.
-        var value = list.Any() ? list.Select(x => x.Rating).Average() : 0;
-        _logger.LogInformation($"Carbon Intensity Average: {value}");
-        return value;
-    }
-
-    private void ValidateAverageProps(IDictionary props)
-    {
-        if (!props.Contains(CarbonAwareConstants.Locations) ||
-            !props.Contains(CarbonAwareConstants.Start) ||
-            !props.Contains(CarbonAwareConstants.End))
-        {
-            throw new ArgumentException("Missing properties to calculate average");
-        }
-    }
-
 }

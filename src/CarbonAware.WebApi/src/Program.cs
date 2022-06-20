@@ -3,6 +3,7 @@ using CarbonAware;
 using CarbonAware.Aggregators.Configuration;
 using CarbonAware.WebApi.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using CarbonAware.WebApi.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +17,12 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-     var filePath = Path.Combine(System.AppContext.BaseDirectory, "CarbonAware.WebApi.xml");
-     c.IncludeXmlComments(filePath);
-     c.CustomOperationIds(apiDesc =>
-        {
-            return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
-        });
+    var filePath = Path.Combine(System.AppContext.BaseDirectory, "CarbonAware.WebApi.xml");
+    c.IncludeXmlComments(filePath);
+    c.CustomOperationIds(apiDesc =>
+       {
+           return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
+       });
 });
 builder.Services.Configure<CarbonAwareVariablesConfiguration>(builder.Configuration.GetSection(CarbonAwareVariablesConfiguration.Key));
 builder.Services.AddCarbonAwareEmissionServices(builder.Configuration);
@@ -31,8 +32,7 @@ builder.Configuration.GetSection(CarbonAwareVariablesConfiguration.Key).Bind(con
 
 builder.Services.AddHealthChecks();
 
-// AppInsights connection string should be specified as an environment variable for this to work
-builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddMonitoringAndTelemetry(builder.Configuration);
 
 var app = builder.Build();
 
@@ -59,3 +59,7 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Please view https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory
+// This line is needed to allow for Integration Testing
+public partial class Program { }
