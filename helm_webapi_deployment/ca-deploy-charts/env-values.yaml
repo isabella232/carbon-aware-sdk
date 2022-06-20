@@ -5,3 +5,7 @@ cawebapimap:
    value: "testuser"
  - name: "WattTimeClient__Password"
    value: "testpasswd"
+ - name: "CarbonAwareVars__TelemetryProvider"
+   value: "ApplicationInsights"
+ - name: "APPLICATIONINSIGHTS_CONNECTION_STRING"
+   value: "InstrumentationKey=something"

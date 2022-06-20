@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: carbonawaretoyacr.azurecr.io/ca_webapi_0526
+  repository: carbonawaretoyacr.azurecr.io/ca_webapi_0620
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v2"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: "ca-webapi-helm"
