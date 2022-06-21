@@ -85,4 +85,25 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotImplemented));
     }
+
+    [Test]
+    [TestCase("westus")]
+    public async Task EmissionsForecastsCurrent_ReturnsOk(string location)
+    {
+        var ignoredDataSources = new List<DataSourceType>() { DataSourceType.JSON };
+        if (ignoredDataSources.Contains(_dataSource))
+        {
+            Assert.Ignore("Ignore test for data sources that don't implement '/emissions/forecasts/current'.");
+        }
+
+        var queryStrings = new Dictionary<string, string>();
+        queryStrings["locations"] = location;
+
+        var endpointURI = ConstructUriWithQueryString(currentForecastURI, queryStrings);
+
+        var result = await _client.GetAsync(endpointURI);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        //Assert.That(result.Content, Is.EqualTo(expected))
+    }
 }
