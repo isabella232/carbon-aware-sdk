@@ -18,6 +18,7 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
     private string healthURI = "/health";
     private string fakeURI = "/fake-endpoint";
     private string bestLocationsURI = "/emissions/bylocations/best";
+    private string currentForecastURI = "/emissions/forecasts/current";
     private JsonSerializerOptions options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
     public CarbonAwareControllerTests(DataSourceType dataSource) : base(dataSource) { }
@@ -48,7 +49,12 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
         _dataSourceMocker.SetupDataMock(start, end, location);
 
         //Call the private method to construct with parameters
-        var endpointURI = ConstructDateQueryURI(bestLocationsURI, location, start, end);
+        var queryStrings = new Dictionary<string, string>();
+        queryStrings["locations"] = location;
+        queryStrings["time"] = $"{start:O}";
+        queryStrings["toTime"] = $"{end:O}";
+
+        var endpointURI = ConstructUriWithQueryString(bestLocationsURI,queryStrings);
 
         //Get response and response content
         var result = await _client.GetAsync(endpointURI);
@@ -59,5 +65,24 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
         var resultContent = JsonSerializer.Deserialize<EmissionsData>(await result.Content.ReadAsStringAsync(), options)!;
         Assert.That(resultContent, Is.Not.Null);
         Assert.That(resultContent.Location, Is.EqualTo(location));
-;    }
+    }
+
+    [Test]
+    public async Task EmissionsForecastsCurrent_ReturnsNotImplemented()
+    {
+        var ignoredDataSources = new List<DataSourceType>() { DataSourceType.WattTime };
+        if (ignoredDataSources.Contains(_dataSource))
+        {
+            Assert.Ignore("Ignore test for data sources that implement '/emissions/forecasts/current'.");
+        }
+
+        var queryStrings = new Dictionary<string, string>();
+        queryStrings["locations"] = "fakeLocation";
+
+        var endpointURI = ConstructUriWithQueryString(currentForecastURI, queryStrings);
+
+        var result = await _client.GetAsync(endpointURI);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotImplemented));
+    }
 }
