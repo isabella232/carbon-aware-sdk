@@ -85,9 +85,40 @@ public class WattTimeDataSourceMocker : IDataSourceMocker
         SetupResponseGivenGetRequest(Paths.Data, JsonSerializer.Serialize(newDataList));
     }
 
-    public void SetupForecastMock(List<Forecast>? content = null)
+    public void SetupForecastMock()
     {
-        SetupResponseGivenGetRequest(Paths.Forecast, JsonSerializer.Serialize(content ?? defaultForecastList));
+        var start = new DateTimeOffset(2022, 6, 23, 0, 0, 0, TimeSpan.Zero);
+        var end = new DateTimeOffset(2022, 6, 24, 0, 0, 0, TimeSpan.Zero);
+        var pointTime = start;
+        var ForecastData = new List<GridEmissionDataPoint>();
+        var currValue = 200.0F;
+        var newForecastPoint =
+            new GridEmissionDataPoint();
+        while (pointTime < end)
+        {
+            newForecastPoint = new GridEmissionDataPoint()
+            {
+                BalancingAuthorityAbbreviation = "testBA",
+                Datatype = "dt",
+                Frequency = 300,
+                Market = "mkt",
+                PointTime = start,
+                Value = currValue,
+                Version = "1.0"
+            };
+            newForecastPoint.PointTime = pointTime;
+            newForecastPoint.Value = currValue;
+            ForecastData.Add(newForecastPoint);
+            pointTime = pointTime + TimeSpan.FromMinutes(5);
+            currValue = currValue + 5.0F;
+        }
+
+        var forecast = new Forecast()
+        {
+            ForecastData = ForecastData,
+            GeneratedAt = testDataPointOffset
+        };
+        SetupResponseGivenGetRequest(Paths.Forecast, JsonSerializer.Serialize(forecast));
     }
 
     public WebApplicationFactory<Program> OverrideWebAppFactory(WebApplicationFactory<Program> factory)
@@ -137,5 +168,6 @@ public class WattTimeDataSourceMocker : IDataSourceMocker
 
     private void SetupLoginMock(LoginResult? content = null) =>
         SetupResponseGivenGetRequest(Paths.Login, JsonSerializer.Serialize(content ?? defaultLoginResult));
+
 
 }
