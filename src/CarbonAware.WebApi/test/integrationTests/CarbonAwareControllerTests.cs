@@ -86,7 +86,6 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotImplemented));
     }
 
-    [Test]
     [TestCase("westus")]
     public async Task EmissionsForecastsCurrent_ReturnsOk(string location)
     {
