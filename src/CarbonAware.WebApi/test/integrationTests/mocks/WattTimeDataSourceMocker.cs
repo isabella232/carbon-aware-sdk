@@ -69,20 +69,25 @@ public class WattTimeDataSourceMocker : IDataSourceMocker
 
     public void SetupDataMock(DateTimeOffset start, DateTimeOffset end, string location)
     {
-        GridEmissionDataPoint newDataPoint = new()
+        var data = new List<GridEmissionDataPoint>();
+        DateTimeOffset pointTime = start;
+        TimeSpan duration = TimeSpan.FromSeconds(300);
+
+        while (pointTime < end)
         {
-            BalancingAuthorityAbbreviation = location,
-            Datatype = defaultDataPoint.Datatype,
-            Frequency = defaultDataPoint.Frequency,
-            Market = defaultDataPoint.Market,
-            PointTime = start,
-            Value = defaultDataPoint.Value,
-            Version = defaultDataPoint.Version
-        };
+            var newDataPoint = new GridEmissionDataPoint()
+            {
+                BalancingAuthorityAbbreviation = testBA,
+                PointTime = pointTime,
+                Value = 999.99F,
+                Version = "1.0"
+            };
 
-        List<GridEmissionDataPoint> newDataList = new() { newDataPoint };
+            data.Add(newDataPoint);
+            pointTime = newDataPoint.PointTime + duration;
+        }
 
-        SetupResponseGivenGetRequest(Paths.Data, JsonSerializer.Serialize(newDataList));
+        SetupResponseGivenGetRequest(Paths.Data, JsonSerializer.Serialize(data));
     }
 
     public void SetupForecastMock()
@@ -118,6 +123,7 @@ public class WattTimeDataSourceMocker : IDataSourceMocker
             ForecastData = ForecastData,
             GeneratedAt = testDataPointOffset
         };
+        
         SetupResponseGivenGetRequest(Paths.Forecast, JsonSerializer.Serialize(forecast));
     }
 
