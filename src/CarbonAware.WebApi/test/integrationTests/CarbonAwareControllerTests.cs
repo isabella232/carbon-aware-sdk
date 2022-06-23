@@ -61,10 +61,6 @@ public class CarbonAwareControllerTests : IntegrationTestingBase
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
-        var resultContent = JsonSerializer.Deserialize<EmissionsData>(await result.Content.ReadAsStringAsync(), options)!;
-        Assert.That(resultContent, Is.Not.Null);
-        Assert.That(resultContent.Location, Is.Not.Null);
     }
 
     [Test]
