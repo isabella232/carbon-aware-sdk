@@ -80,7 +80,10 @@ public class WattTimeDataSourceMocker : IDataSourceMocker
                 BalancingAuthorityAbbreviation = testBA,
                 PointTime = pointTime,
                 Value = 999.99F,
-                Version = "1.0"
+                Version = "1.0",
+                Datatype = "dt",
+                Frequency = 300,
+                Market = "mkt",
             };
 
             data.Add(newDataPoint);
