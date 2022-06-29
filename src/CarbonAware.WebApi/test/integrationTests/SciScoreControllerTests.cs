@@ -22,11 +22,13 @@ public class SciScoreControllerTests : IntegrationTestingBase
 
 
     [TestCase("2022-1-1T04:05:06Z", "2022-1-2T04:05:06Z", "eastus", HttpStatusCode.OK)]
-    [TestCase("2021-1-1", "2022-1-2", "westus", HttpStatusCode.OK)]
-    public async Task SCI_AcceptsValidData_ReturnsContent(DateTimeOffset start, DateTimeOffset end, string location, HttpStatusCode expectedCode)
+    [TestCase("2021-11-18", "2022-1-2", "westus", HttpStatusCode.OK)]
+    public async Task SCI_AcceptsValidData_ReturnsContent(string start, string end, string location, HttpStatusCode expectedCode)
     {
-        _dataSourceMocker.SetupDataMock(start, end, location);
-        string timeInterval = start.ToUniversalTime().ToString("O") + "/" + end.ToUniversalTime().ToString("O");
+        var startTime = DateTimeOffset.Parse(start);
+        var endTime = DateTimeOffset.Parse(end);
+        _dataSourceMocker.SetupDataMock(startTime, endTime, location);
+        string timeInterval = $"{start}/{end}";
 
         object body = new
         {
@@ -43,11 +45,6 @@ public class SciScoreControllerTests : IntegrationTestingBase
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.StatusCode, Is.EqualTo(expectedCode));
-
-        var resultContent = JsonSerializer.Deserialize<SciScore>(await result.Content.ReadAsStringAsync(), options)!;
-        Assert.That(resultContent, Is.Not.Null);
-        Assert.That(resultContent.MarginalCarbonIntensityValue, Is.Not.Null);
-        Assert.That(resultContent.MarginalCarbonIntensityValue, Is.GreaterThanOrEqualTo(0));
     }
 
     [TestCase("2022-1-1T04:05:06Z", "2022-1-2T04:05:06Z", "eastus", HttpStatusCode.BadRequest)]
@@ -72,5 +69,4 @@ public class SciScoreControllerTests : IntegrationTestingBase
         Assert.That(resultContent.MarginalCarbonIntensityValue, Is.Null);
     }
 
-    
 }
