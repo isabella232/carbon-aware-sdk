@@ -4,8 +4,6 @@ using CarbonAware.Aggregators.Configuration;
 using CarbonAware.WebApi.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using CarbonAware.WebApi.Configuration;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,18 +33,6 @@ builder.Configuration.GetSection(CarbonAwareVariablesConfiguration.Key).Bind(con
 builder.Services.AddHealthChecks();
 
 builder.Services.AddMonitoringAndTelemetry(builder.Configuration);
-var serviceVersion = "0.0.1";
-
-builder.Services.AddOpenTelemetryTracing(b =>
-{
-    b
-    .AddConsoleExporter()
-    .AddAspNetCoreInstrumentation()
-    .AddSource(TelemetryActivity.ServiceName)
-    .SetResourceBuilder(
-        ResourceBuilder.CreateDefault()
-            .AddService(serviceName: TelemetryActivity.ServiceName, serviceVersion: serviceVersion));
-});
 
 var app = builder.Build();
 

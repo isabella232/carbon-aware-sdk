@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using CarbonAware.Model;
 using System.Diagnostics;
+using CarbonAware.WebApi.Configuration;
 
 namespace CarbonAware.WebApi.Controllers;
 
@@ -36,7 +37,7 @@ public class CarbonAwareController : ControllerBase
     [HttpGet("bylocations/best")]
     public async Task<IActionResult> GetBestEmissionsDataForLocationsByTime([FromQuery(Name = "location"), BindRequired] string[] locations, DateTime? time = null, DateTime? toTime = null, int durationMinutes = 0)
     {
-        using (var activity = Activity.StartActivity())
+        using (var activity = TelemetryActivity.Activity.StartActivity())
         {
             //The LocationType is hardcoded for now. Ideally this should be received from the request or configuration 
             IEnumerable<Location> locationEnumerable = CreateLocationsFromQueryString(locations);
@@ -71,7 +72,7 @@ public class CarbonAwareController : ControllerBase
     [HttpGet("bylocations")]
     public async Task<IActionResult> GetEmissionsDataForLocationsByTime([FromQuery(Name = "location"), BindRequired] string[] locations, DateTime? time = null, DateTime? toTime = null, int durationMinutes = 0)
     {
-        using (var activity = Activity.StartActivity())
+        using (var activity = TelemetryActivity.Activity.StartActivity())
         {
             IEnumerable<Location> locationEnumerable = CreateLocationsFromQueryString(locations);
             var props = new Dictionary<string, object?>() {
@@ -100,7 +101,7 @@ public class CarbonAwareController : ControllerBase
     [HttpGet("bylocation")]
     public async Task<IActionResult> GetEmissionsDataForLocationByTime([FromQuery, BindRequired] string location, DateTime? time = null, DateTime? toTime = null, int durationMinutes = 0)
     {
-        using (var activity = Activity.StartActivity())
+        using (var activity = TelemetryActivity.Activity.StartActivity())
         {
             var locations = new List<Location>() { new Location() { RegionName = location, LocationType=LocationType.CloudProvider } };
             var props = new Dictionary<string, object?>() {
@@ -130,7 +131,7 @@ public class CarbonAwareController : ControllerBase
     [HttpGet("forecasts/current")]
     public async Task<IActionResult> GetCurrentForecastData([FromQuery(Name = "location"), BindRequired] string[] locations, DateTimeOffset? startTime = null, DateTimeOffset? endTime = null, int? windowSize = null)
     {
-        using (var activity = Activity.StartActivity())
+        using (var activity = TelemetryActivity.Activity.StartActivity())
         {
             IEnumerable<Location> locationEnumerable = CreateLocationsFromQueryString(locations);
             var props = new Dictionary<string, object?>() {
