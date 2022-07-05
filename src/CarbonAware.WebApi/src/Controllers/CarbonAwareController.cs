@@ -115,7 +115,7 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
-    /// Maps user input query parameters to props dictionary for use with the data sources current forecast method. hello there Akshara
+    /// Maps user input query parameters to props dictionary for use with the data sources current forecast method.
     /// </summary>
     /// <param name="locations"> String array of named locations.</param>
     /// <param name="startTime"> Start time of forecast period.</param>
@@ -147,16 +147,32 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
-    /// TODO Given a list of payloads, gets the forecast values for each of the given payloads
+    /// Given a list of requested historical forecasts, retrieves the forecasted data and calculates the optimal
+    /// marginal carbon intensity window. 
     /// </summary>
-    /// <returns>TODO returns  a list of forecast lists, one for each of the payloads that is passed in </returns>
+    /// <returns>An array of forecasts with their optimal marginal carbon intensity window.</returns>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /emissions/forecasts/batch
+    ///     {
+    ///        "requestTime": "2022-01-01T00:12:00Z", // Required
+    ///        "location": "europenorth", // Required
+    ///        "startTime": "2022-01-01T00:14:00Z", // Defaults to first forecast data point
+    ///        "endTime": "2022-01-01T00:18:00Z",   // Defaults to last forecast data point
+    ///        "windowSize": "30", // Defaults to the size of a single forecast data point
+    ///     }
+    /// </remarks>
+    /// <response code="200">Returns the requested forecast objects</response>
+    /// <response code="400">If any of the requested items are invalid</response>
+    /// <response code="501">If the underlying data source does not support forecasting</response>
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EmissionsForecastDTO>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status501NotImplemented, Type = typeof(ValidationProblemDetails))]
-    [HttpPost("forecasts")]
-    public IActionResult PostForecastData(IEnumerable<EmissionsForecastBatch> forecastsPayloads)
+    [HttpPost("forecasts/batch")]
+    public IActionResult BatchForecastData(IEnumerable<EmissionsForecastBatchDTO> requestedForecasts)
     {
         var result = new List<EmissionsForecastDTO>();
         return Ok(result);

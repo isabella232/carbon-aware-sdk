@@ -4,8 +4,11 @@ using CarbonAware.Model;
 using System.Text.Json.Serialization;
 
 [Serializable]
-public record EmissionsForecastDTO : EmissionsForecastBase
+public record EmissionsForecastDTO : EmissionsForecastBaseDTO
 {
+    [JsonPropertyName("generatedAt")]
+    public DateTimeOffset GeneratedAt { get; set; }
+
     [JsonPropertyName("optimalDataPoint")]
     public EmissionsDataDTO? OptimalDataPoint { get; set; }
 
