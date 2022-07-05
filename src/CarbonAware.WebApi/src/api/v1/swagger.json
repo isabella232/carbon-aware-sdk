@@ -1,0 +1,702 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CarbonAware.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "version": "1.0"
+  },
+  "paths": {
+    "/emissions/bylocations/best": {
+      "get": {
+        "tags": [
+          "CarbonAware"
+        ],
+        "summary": "Calculate the best emission data by location for a specified time period.",
+        "operationId": "GetBestEmissionsDataForLocationsByTime",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "description": "String array of named locations.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "description": "[Optional] Start time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toTime",
+            "in": "query",
+            "description": "[Optional] End time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "durationMinutes",
+            "in": "query",
+            "description": "[Optional] Duration for the data query.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmissionsData"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/emissions/bylocations": {
+      "get": {
+        "tags": [
+          "CarbonAware"
+        ],
+        "summary": "Calculate the observed emission data by list of locations for a specified time period.",
+        "operationId": "GetEmissionsDataForLocationsByTime",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "description": "String array of named locations.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "description": "[Optional] Start time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toTime",
+            "in": "query",
+            "description": "[Optional] End time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "durationMinutes",
+            "in": "query",
+            "description": "[Optional] Duration for the data query.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmissionsData"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/emissions/bylocation": {
+      "get": {
+        "tags": [
+          "CarbonAware"
+        ],
+        "summary": "Calculate the best emission data by location for a specified time period.",
+        "operationId": "GetEmissionsDataForLocationByTime",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "description": "String named location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "time",
+            "in": "query",
+            "description": "[Optional] Start time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toTime",
+            "in": "query",
+            "description": "[Optional] End time for the data query.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "durationMinutes",
+            "in": "query",
+            "description": "[Optional] Duration for the data query.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmissionsData"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/emissions/forecasts/current": {
+      "get": {
+        "tags": [
+          "CarbonAware"
+        ],
+        "summary": "Maps user input query parameters to props dictionary for use with the data sources current forecast method.",
+        "operationId": "GetCurrentForecastData",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "description": "String array of named locations.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Start time of forecast period.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "End time of forecast period.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "windowSize",
+            "in": "query",
+            "description": "Size of rolling average window in minutes.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmissionsForecastDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sci-scores": {
+      "post": {
+        "tags": [
+          "SciScore"
+        ],
+        "summary": "Gets sci-score value, currently dummy function to keep consistency",
+        "operationId": "CreateAsync",
+        "requestBody": {
+          "description": "input from JSON request converted to input object with location and time interval",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SciScoreInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SciScore"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SciScore"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SciScore"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sci-scores/marginal-carbon-intensity": {
+      "post": {
+        "tags": [
+          "SciScore"
+        ],
+        "summary": "Gets the marginal carbon intensity value",
+        "operationId": "GetCarbonIntensityAsync",
+        "requestBody": {
+          "description": "input from JSON request converted to input object with location and time interval",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SciScoreInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EmissionsData": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "duration": {
+            "$ref": "#/components/schemas/TimeSpan"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmissionsDataDTO": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmissionsForecastDTO": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windowSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "optimalDataPoint": {
+            "$ref": "#/components/schemas/EmissionsDataDTO"
+          },
+          "forecastData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmissionsDataDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LocationInput": {
+        "required": [
+          "locationType"
+        ],
+        "type": "object",
+        "properties": {
+          "locationType": {
+            "type": "string",
+            "example": "Cloud Provider"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 153.23
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 72.23
+          },
+          "cloudProvider": {
+            "type": "string",
+            "nullable": true,
+            "example": "Azure"
+          },
+          "regionName": {
+            "type": "string",
+            "nullable": true,
+            "example": "useast"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SciScore": {
+        "type": "object",
+        "properties": {
+          "sciScore": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 750.6
+          },
+          "energyValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 1
+          },
+          "marginalCarbonIntensityValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 750
+          },
+          "embodiedEmissionsValue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "example": 0
+          },
+          "functionalUnitValue": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "example": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "SciScoreInput": {
+        "required": [
+          "location",
+          "timeInterval"
+        ],
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/LocationInput"
+          },
+          "timeInterval": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeSpan": {
+        "type": "object",
+        "properties": {
+          "ticks": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "days": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hours": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "milliseconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "seconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDays": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalHours": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMilliseconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalMinutes": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalSeconds": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      }
+    }
+  }
+}

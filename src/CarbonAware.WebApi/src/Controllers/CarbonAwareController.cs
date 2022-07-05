@@ -115,7 +115,7 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
-    /// Maps user input query parameters to props dictionary for use with the data sources current forecast method.
+    /// Maps user input query parameters to props dictionary for use with the data sources current forecast method. hello there Akshara
     /// </summary>
     /// <param name="locations"> String array of named locations.</param>
     /// <param name="startTime"> Start time of forecast period.</param>
