@@ -147,6 +147,22 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
+    /// TODO add summary
+    /// </summary>
+    /// <returns>TODO add return</returns>
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EmissionsForecastDTO>))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status501NotImplemented, Type = typeof(ValidationProblemDetails))]
+    [HttpPost("forecasts")]
+    public async Task<IActionResult> GetForecastData(IEnumerable<BatchForecastPayload> forecasts)
+    {
+        pass;
+    }
+
+
+    /// <summary>
     /// Given a dictionary of properties, handles call to GetEmissionsDataAsync including logging and response handling.
     /// </summary>
     /// <param name="props"> Dictionary of properties to call plugin. </param>
