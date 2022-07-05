@@ -80,7 +80,7 @@ public class CarbonAwareController : ControllerBase
                 { CarbonAwareConstants.End, toTime},
                 { CarbonAwareConstants.Duration, durationMinutes },
             };
-            
+
             return await GetEmissionsDataAsync(props);
         }
     }
@@ -102,14 +102,14 @@ public class CarbonAwareController : ControllerBase
     {
         using (var activity = Activity.StartActivity())
         {
-            var locations = new List<Location>() { new Location() { RegionName = location, LocationType=LocationType.CloudProvider } };
+            var locations = new List<Location>() { new Location() { RegionName = location, LocationType = LocationType.CloudProvider } };
             var props = new Dictionary<string, object?>() {
                 { CarbonAwareConstants.Locations, locations },
                 { CarbonAwareConstants.Start, time },
                 { CarbonAwareConstants.End, toTime },
                 { CarbonAwareConstants.Duration, durationMinutes },
             };
-            
+
             return await GetEmissionsDataAsync(props);
         }
     }
@@ -147,18 +147,19 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
-    /// TODO add summary
+    /// TODO Given a list of payloads, gets the forecast values for each of the given payloads
     /// </summary>
-    /// <returns>TODO add return</returns>
+    /// <returns>TODO returns  a list of forecast lists, one for each of the payloads that is passed in </returns>
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EmissionsForecastDTO>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status501NotImplemented, Type = typeof(ValidationProblemDetails))]
     [HttpPost("forecasts")]
-    public async Task<IActionResult> GetForecastData(IEnumerable<BatchForecastPayload> forecasts)
+    public IActionResult PostForecastData(IEnumerable<EmissionsForecastBatch> forecastsPayloads)
     {
-        pass;
+        var result = new List<EmissionsForecastDTO>();
+        return Ok(result);
     }
 
 
