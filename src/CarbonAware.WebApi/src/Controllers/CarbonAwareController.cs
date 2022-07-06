@@ -147,22 +147,11 @@ public class CarbonAwareController : ControllerBase
     }
 
     /// <summary>
-    /// Given a list of requested historical forecasts, retrieves the forecasted data and calculates the optimal
+    /// Given an array of requested historical forecasts, retrieve the forecasted data and calculate the optimal
     /// marginal carbon intensity window. 
     /// </summary>
+    /// <param name="requestedForecasts"> Array of requested forecasts.</param>
     /// <returns>An array of forecasts with their optimal marginal carbon intensity window.</returns>
-    /// <remarks>
-    /// Sample request:
-    ///
-    ///     POST /emissions/forecasts/batch
-    ///     {
-    ///        "requestTime": "2022-01-01T00:12:00Z", // Required
-    ///        "location": "europenorth", // Required
-    ///        "startTime": "2022-01-01T00:14:00Z", // Defaults to first forecast data point
-    ///        "endTime": "2022-01-01T00:18:00Z",   // Defaults to last forecast data point
-    ///        "windowSize": "30", // Defaults to the size of a single forecast data point
-    ///     }
-    /// </remarks>
     /// <response code="200">Returns the requested forecast objects</response>
     /// <response code="400">If any of the requested items are invalid</response>
     /// <response code="501">If the underlying data source does not support forecasting</response>

@@ -212,6 +212,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  /emissions/forecasts/batch:
+    post:
+      tags:
+        - CarbonAware
+      summary: "Given a list of requested historical forecasts, retrieves the forecasted data and calculates the optimal\r\nmarginal carbon intensity window."
+      description: "Sample request:\r\n            \r\n    POST /emissions/forecasts/batch\r\n    {\r\n       \"requestTime\": \"2022-01-01T00:12:00Z\", // Required\r\n       \"location\": \"europenorth\", // Required\r\n       \"startTime\": \"2022-01-01T00:14:00Z\", // Defaults to first forecast data point\r\n       \"endTime\": \"2022-01-01T00:18:00Z\",   // Defaults to last forecast data point\r\n       \"windowSize\": \"30\", // Defaults to the size of a single forecast data point\r\n    }"
+      operationId: BatchForecastData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmissionsForecastBatchDTO'
+          text/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmissionsForecastBatchDTO'
+          application/*+json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmissionsForecastBatchDTO'
+      responses:
+        '200':
+          description: Returns the requested forecast objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmissionsForecastDTO'
+        '400':
+          description: If any of the requested items are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '501':
+          description: If the underlying data source does not support forecasting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /sci-scores:
     post:
       tags:
@@ -309,12 +360,9 @@ components:
           type: number
           format: double
       additionalProperties: false
-    EmissionsForecastDTO:
+    EmissionsForecastBatchDTO:
       type: object
       properties:
-        generatedAt:
-          type: string
-          format: date-time
         location:
           type: string
           nullable: true
@@ -327,6 +375,28 @@ components:
         windowSize:
           type: integer
           format: int32
+        requestedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+    EmissionsForecastDTO:
+      type: object
+      properties:
+        location:
+          type: string
+          nullable: true
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        windowSize:
+          type: integer
+          format: int32
+        generatedAt:
+          type: string
+          format: date-time
         optimalDataPoint:
           $ref: '#/components/schemas/EmissionsDataDTO'
         forecastData:
